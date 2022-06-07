@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="main.css">
+
+    </head>
+    <body>
+
+        <div class="box">
+            <div class="row header"></div>
+            <div class="row content">
+                <div id="drawing"></div>
+            </div>
+            <div class="row footer">
+                Shape:
+                <select id="shape">
+                    <option value="mouse paint">Mouse paint</option>
+                    <option value="rect">Recangle</option>
+                    <option value="rounded-rect">Rounded Recangle</option>
+                    <option value="ellipse">Circle</option>
+                    <option value="arrow">Arrow</option>
+                </select> Color:
+                <select id="color">
+                    <option value="#ff0099">Pink</option>
+                    <option value="#f3f313">Yellow</option>
+                    <option value="#0dd5fc">Blue</option>
+                    <option value="#83f52c">Green</option>
+                </select>  
+            </div>
+        </div>
+        <script src="./dist/bundle.js" defer></script>
+    </body>
+</html>
