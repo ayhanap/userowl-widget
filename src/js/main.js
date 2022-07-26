@@ -1,128 +1,145 @@
 /*! svg.draw.js - v2.0.3 - 2017-06-19
-* https://github.com/svgdotjs/svg.draw.js
-* Copyright (c) 2017 Ulrich-Matthias Schäfer; Licensed MIT */
+ * https://github.com/svgdotjs/svg.draw.js
+ * Copyright (c) 2017 Ulrich-Matthias Schäfer; Licensed MIT */
 
-require('svg.js');
-require('./svg.draw.js');
+import {
+  SVG,
+  Shape,
+  Container,
+  Rect,
+  nodeOrNew,
+  extend
+} from "@svgdotjs/svg.js";
+import "@svgdotjs/svg.draw.js";
+import "@svgdotjs/svg.draggable.js";
 
-const draw = SVG('drawing');
+const draww = SVG()
+  .addTo("#drawing")
+  .size("100%", "100%");
+//draww(draw);
 const shapes = [];
 let index = 0;
 let shape;
 
 const getDrawObject = () => {
-  shape = document.getElementById('shape').value;
-  const color = document.getElementById('color').value;
+  shape = document.getElementById("shape").value;
+  const color = document.getElementById("color").value;
   const option = {
     stroke: color,
-    'stroke-width': 2,
-    'fill-opacity': 0,
+    "stroke-width": 2,
+    "fill-opacity": 0
+  };
+  const markerOption = {
+    fill: color
   };
 
   switch (shape) {
-    case 'mouse paint':
-      return draw.polyline().attr(option);
-    case 'ellipse':
-      return draw.ellipse().attr(option);
-    case 'rect':
-      return draw.rect().attr(option);
-    case 'arrow':
-      return draw.arrow().attr(option);
-      case 'rounded-rect':
-        return draw.rounded().attr(option);
+    case "mouse paint":
+      return draww.polyline().attr(option);
+    case "ellipse":
+      return draww.ellipse().attr(option);
+    case "rect":
+      return draww.rect().attr(option);
+    case "arrow":
+      var arrow = draww.arrow();
+      arrow.reference("marker-end").attr(markerOption);
+      return arrow.attr(option);
+    case "rounded-rect":
+      return draww.rounded().attr(option);
   }
   return null;
-}
+};
 
-
-draw.on('mousedown', event => {
+draww.on("mousedown", event => {
   const shape = getDrawObject();
   shapes[index] = shape;
   shape.draw(event);
 });
 
-draw.on('touchstart', event => {
+draww.on("touchstart", event => {
   const shape = getDrawObject();
   shapes[index] = shape;
   shape.draw(event);
 });
 
-draw.on('mousemove', event => {
-  if (shape === 'mouse paint' && shapes[index]) {
-    shapes[index].draw('point', event);
+draww.on("mousemove", event => {
+  if (shape === "mouse paint" && shapes[index]) {
+    shapes[index].draw("point", event);
   }
-})
-
-draw.on('touchmove', event => {
-  if (shape === 'mouse paint' && shapes[index]) {
-    shapes[index].draw('point', event);
-  }
-})
-
-draw.on('mouseup', event => {
-  if (shape === 'mouse paint') {
-    shapes[index].draw('stop', event);
-    shapes[index].draw('done');
-  } else {
-    shapes[index].draw(event);
-  }
-  index++;
-})
-
-draw.on('touchend', event => {
-  if (shape === 'mouse paint') {
-    shapes[index].draw('stop', event);
-    shapes[index].draw('done');
-  } else {
-    shapes[index].draw(event);
-  }
-  index++;
-})
-
-class IPoint extends SVG.Shape {
-    constructor(node) {
-        super(SVG.nodeOrNew("circle", node), node);
-        this.fill({color: "yellow", opacity: 0.5})
-            .stroke({color: 'black', opacity: '1'})
-            .attr({r: 20});
-    }
-    setPos(x, y){
-         return this.attr({cx: x, cy: y});
-    }
-}
-SVG.extend(SVG.Container, {
-    iPoint: function (x, y) {
-        return this.put(new IPoint).setPos(x, y).draggable();
-    }
 });
 
-class Rounded extends SVG.Rect {
+draww.on("touchmove", event => {
+  if (shape === "mouse paint" && shapes[index]) {
+    shapes[index].draw("point", event);
+  }
+});
+
+draww.on("mouseup", event => {
+  if (shape === "mouse paint") {
+    shapes[index].draw("stop", event);
+    shapes[index].draw("done");
+  } else {
+    shapes[index].draw(event);
+  }
+  index++;
+});
+
+draww.on("touchend", event => {
+  if (shape === "mouse paint") {
+    shapes[index].draw("stop", event);
+    shapes[index].draw("done");
+  } else {
+    shapes[index].draw(event);
+  }
+  index++;
+});
+
+class IPoint extends Shape {
   constructor(node) {
-    super(SVG.nodeOrNew("circle", node), node);
-    this.fill({color: "yellow", opacity: 0.5})
-        .stroke({color: 'black', opacity: '1'})
-        .attr({r: 20});
+    super(nodeOrNew("circle", node), node);
+    this.fill({ color: "yellow", opacity: 0.5 })
+      .stroke({ color: "black", opacity: "1" })
+      .attr({ r: 20 });
+  }
+  setPos(x, y) {
+    return this.attr({ cx: x, cy: y });
+  }
+}
+extend(Container, {
+  iPoint: function(x, y) {
+    return this.put(new IPoint())
+      .setPos(x, y)
+      .draggable();
+  }
+});
+
+class Rounded extends Rect {
+  constructor(node) {
+    super(nodeOrNew("circle", node), node);
+    this.fill({ color: "yellow", opacity: 0.5 })
+      .stroke({ color: "black", opacity: "1" })
+      .attr({ r: 20 });
   }
   // Create method to proportionally scale the rounded corners
   size(width, height) {
     return this.attr({
-      width:  width
-    , height: height
-    , rx:     height / 5
-    , ry:     height / 5
-    })
+      width: width,
+      height: height,
+      rx: height / 5,
+      ry: height / 5
+    });
   }
 }
 
 // Add a method to create a rounded rect
-SVG.extend(SVG.Container,  {
+extend(Container, {
   // Create a rounded element
   rounded: function(width, height) {
-    return this.put(new Rounded).size(width, height)
+    return this.put(new Rounded()).size(width, height);
   }
 });
 
-
+/*
 SVG.Element.prototype.draw.extend('arrow', {
   init:function(e){
     var p = this.startPoint;
@@ -160,8 +177,10 @@ SVG.Element.prototype.draw.extend('arrow', {
   clean:function(){
   }
 });
+*/
 
-// This is custom extension of line, polyline, polygon which doesn't draw the circle on the line. 
+// This is custom extension of line, polyline, polygon which doesn't draw the circle on the line.
+/*
 SVG.Element.prototype.draw.extend('line polyline polygon', {
 
   init:function(e){
@@ -247,3 +266,4 @@ SVG.Element.prototype.draw.extend('line polyline polygon', {
 
   },
 });
+*/
