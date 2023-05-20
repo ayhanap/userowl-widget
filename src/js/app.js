@@ -1,1 +1,1 @@
-require('./main.js');
+require("./widget.js");

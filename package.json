@@ -1,8 +1,8 @@
 {
-  "name": "swg-tryout",
+  "name": "userowl-widget",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
     "dev": "webpack-dev-server --open --config webpack.config.dev.js",
@@ -24,6 +24,7 @@
     "@babel/core": "^7.1.5",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.5",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
@@ -38,18 +39,18 @@
     "jest-dom": "^2.1.1",
     "prettier": "^1.15.2",
     "pretty-quick": "^1.8.0",
+    "prop-types": "^15.6.2",
     "style-loader": "^0.23.1",
     "webpack": "^4.25.1",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
-    "webpack-merge": "^4.1.4",
-    "@babel/polyfill": "^7.0.0",
-    "prop-types": "^15.6.2"
+    "webpack-merge": "^4.1.4"
   },
   "dependencies": {
     "@svgdotjs/svg.draggable.js": "^3.0.2",
-    "@svgdotjs/svg.draw.js": "file:../svg.draw.js",
+    "@userowl/svg.draw.js": "^0.1.0",
+    "@svgdotjs/svg.filter.js": "^3.0.8",
     "@svgdotjs/svg.js": "^3.1.2"
   }
 }

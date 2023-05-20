@@ -2,21 +2,23 @@
  * https://github.com/svgdotjs/svg.draw.js
  * Copyright (c) 2017 Ulrich-Matthias Schäfer; Licensed MIT */
 
+import "@svgdotjs/svg.draggable.js";
+import "@svgdotjs/svg.filter.js";
 import {
-  SVG,
-  Shape,
   Container,
   Rect,
-  nodeOrNew,
-  extend
+  SVG,
+  Shape,
+  extend,
+  nodeOrNew
 } from "@svgdotjs/svg.js";
-import "@svgdotjs/svg.draw.js";
-import "@svgdotjs/svg.draggable.js";
+import "@userowl/svg.draw.js";
 
 const draww = SVG()
   .addTo("#drawing")
   .size("100%", "100%");
 //draww(draw);
+
 const shapes = [];
 let index = 0;
 let shape;
@@ -26,28 +28,65 @@ const getDrawObject = () => {
   const color = document.getElementById("color").value;
   const option = {
     stroke: color,
-    "stroke-width": 2,
-    "fill-opacity": 0
+    "stroke-width": 5,
+    "fill-opacity": 0,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    opacity: 0.6
   };
   const markerOption = {
     fill: color
   };
 
+  var drawObject;
   switch (shape) {
     case "mouse paint":
-      return draww.polyline().attr(option);
+      drawObject = draww.polyline().attr(option);
+      break;
     case "ellipse":
-      return draww.ellipse().attr(option);
+      drawObject = draww.ellipse().attr(option);
+      break;
     case "rect":
-      return draww.rect().attr(option);
+      drawObject = draww.rect().attr(option);
+      break;
     case "arrow":
-      var arrow = draww.arrow();
-      arrow.reference("marker-end").attr(markerOption);
-      return arrow.attr(option);
+      drawObject = draww.arrow().attr(option);
+      drawObject.reference("marker-end").attr(markerOption);
+      break;
     case "rounded-rect":
-      return draww.rounded().attr(option);
+      drawObject = draww.rounded().attr(option);
+      break;
   }
-  return null;
+  var shadowFilter = draww.filter(function(add) {
+    add.dropShadow(add.$source, 0, 0, 3);
+    this.size("200%", "200%").move("-50%", "-50%");
+    /* var blur = add.offset(20, 20).gaussianBlur(5)
+
+    add.blend(add.$source, blur)
+  
+    this.size('200%','200%').move('-50%', '-50%')
+    */
+  });
+  drawObject.draggable();
+
+  drawObject.on("drawdone.apaydin", e => {
+    e.target.instance.attr({ opacity: 1 });
+    e.target.instance.off("drawdone.apaydin");
+    // eslint-disable-next-line no-unused-vars
+    drawObject.on("mouseover.apaydin", e => {
+      drawObject.filterWith(shadowFilter);
+    });
+  });
+
+  // eslint-disable-next-line no-unused-vars
+  drawObject.on("mouseup.apaydin", e => {
+    // console.log(e);
+  });
+  // eslint-disable-next-line no-unused-vars
+  drawObject.on("mouseout.apaydin", e => {
+    drawObject.unfilter();
+  });
+  return drawObject;
 };
 
 draww.on("mousedown", event => {
@@ -266,4 +305,5 @@ SVG.Element.prototype.draw.extend('line polyline polygon', {
 
   },
 });
+
 */

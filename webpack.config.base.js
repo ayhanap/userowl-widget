@@ -4,7 +4,7 @@ module.exports = {
   entry: "./src/js/app.js",
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "app.bundle.js"
+    filename: "widget.js"
   },
   module: {
     rules: [
