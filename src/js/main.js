@@ -1,7 +1,6 @@
 /*! svg.draw.js - v2.0.3 - 2017-06-19
  * https://github.com/svgdotjs/svg.draw.js
  * Copyright (c) 2017 Ulrich-Matthias Schäfer; Licensed MIT */
-
 import "@svgdotjs/svg.draggable.js";
 import "@svgdotjs/svg.filter.js";
 import {
@@ -12,20 +11,35 @@ import {
   extend,
   nodeOrNew
 } from "@svgdotjs/svg.js";
-import "@userowl/svg.draw.js";
+import { registerPlugin } from "@userowl/svg.draw.js";
 
-const draww = SVG()
-  .addTo("#drawing")
-  .size("100%", "100%");
+export const draww = SVG().size("100%", "100%");
 //draww(draw);
 
 const shapes = [];
 let index = 0;
 let shape;
 
+const shadowFilter = draww.filter(function(add) {
+  add.dropShadow(add.$source, 0, 0, 3);
+  // this.size("2500%", "2000%").move("-1250%", "-1250%");
+  add.node.setAttribute("filterUnits", "userSpaceOnUse");
+  /* var blur = add.offset(20, 20).gaussianBlur(5)
+
+  add.blend(add.$source, blur)
+
+  this.size('200%','200%').move('-50%', '-50%')
+  */
+});
+
 const getDrawObject = () => {
-  shape = document.getElementById("shape").value;
-  const color = document.getElementById("color").value;
+  shape = document.querySelector(".uowl-sat-button-bar-button--selected")
+    .dataset.type;
+  const color = document.querySelector(".uowl-sat-button-bar-color-picker")
+    .dataset.color;
+  // shape = document.getElementById("shape").value;
+  // const color = document.getElementById("color").value;
+  // const color = "#ff0000";
   const option = {
     stroke: color,
     "stroke-width": 5,
@@ -57,16 +71,7 @@ const getDrawObject = () => {
       drawObject = draww.rounded().attr(option);
       break;
   }
-  var shadowFilter = draww.filter(function(add) {
-    add.dropShadow(add.$source, 0, 0, 3);
-    this.size("200%", "200%").move("-50%", "-50%");
-    /* var blur = add.offset(20, 20).gaussianBlur(5)
 
-    add.blend(add.$source, blur)
-  
-    this.size('200%','200%').move('-50%', '-50%')
-    */
-  });
   drawObject.draggable();
 
   drawObject.on("drawdone.apaydin", e => {
@@ -219,91 +224,84 @@ SVG.Element.prototype.draw.extend('arrow', {
 */
 
 // This is custom extension of line, polyline, polygon which doesn't draw the circle on the line.
-/*
-SVG.Element.prototype.draw.extend('line polyline polygon', {
 
-  init:function(e){
+registerPlugin("line polyline polygon", {
+  // eslint-disable-next-line no-unused-vars
+  init: function(e) {
     // When we draw a polygon, we immediately need 2 points.
     // One start-point and one point at the mouse-position
 
     this.set = new Set();
 
     var p = this.startPoint,
-        arr = [
-          [p.x, p.y],
-          [p.x, p.y]
-        ];
+      arr = [
+        [p.x, p.y],
+        [p.x, p.y]
+      ];
 
     this.el.plot(arr);
   },
 
   // The calc-function sets the position of the last point to the mouse-position (with offset ofc)
-  calc:function (e) {
+  calc: function(e) {
     var arr = this.el.array().valueOf();
     arr.pop();
 
     if (e) {
       var x, y;
       if (e.changedTouches && e.changedTouches.length) {
-          x = e.changedTouches[0].clientX;
-          y = e.changedTouches[0].clientY;
+        x = e.changedTouches[0].clientX;
+        y = e.changedTouches[0].clientY;
       } else {
-          x = e.clientX;
-          y = e.clientY;
+        x = e.clientX;
+        y = e.clientY;
       }
-      
+
       var p = this.transformPoint(x, y);
       arr.push(this.snapToGrid([p.x, p.y]));
     }
 
     this.el.plot(arr);
-
   },
 
-  point:function(e){
-
-    if (this.el.type.indexOf('poly') > -1) {
-
+  point: function(e) {
+    if (this.el.type.indexOf("poly") > -1) {
       var x, y;
       if (e.changedTouches && e.changedTouches.length) {
-          x = e.changedTouches[0].clientX;
-          y = e.changedTouches[0].clientY;
+        x = e.changedTouches[0].clientX;
+        y = e.changedTouches[0].clientY;
       } else {
-          x = e.clientX;
-          y = e.clientY;
+        x = e.clientX;
+        y = e.clientY;
       }
 
       // Add the new Point to the point-array
       var p = this.transformPoint(x, y),
-          arr = this.el.array().valueOf();
+        arr = this.el.array().valueOf();
 
       arr.push(this.snapToGrid([p.x, p.y]));
 
       this.el.plot(arr);
 
       // Fire the `drawpoint`-event, which holds the coords of the new Point
-      this.el.fire('drawpoint', {event:e, p:{x:p.x, y:p.y}, m:this.m});
+      this.el.fire("drawpoint", { event: e, p: { x: p.x, y: p.y }, m: this.m });
 
       return;
     }
 
     // We are done, if the element is no polyline or polygon
     this.stop(e);
-
+    this.el.fire("drawdone");
   },
 
-  clean:function(){
-
+  clean: function() {
     // Remove all circles
-    this.set.forEach(function () {
+    this.set.forEach(function() {
       this.remove();
     });
 
     this.set.clear();
 
     delete this.set;
-
-  },
+  }
 });
-
-*/
