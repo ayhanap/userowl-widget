@@ -869,11 +869,11 @@ ${evt.data.cssVariables}
     arrowButton.appendChild(createArrowIcon());
     arrowButton.addEventListener("click", buttonBarButtonOnClick);
 
-    const highlightButton = createSATButtonBarButton("mouse paint");
+    const highlightButton = createSATButtonBarButton("highlight");
     highlightButton.appendChild(createHighlighIcon());
     highlightButton.addEventListener("click", buttonBarButtonOnClick);
 
-    const penButton = createSATButtonBarButton("mouse paint");
+    const penButton = createSATButtonBarButton("pen");
     penButton.appendChild(createPenIcon());
     penButton.addEventListener("click", buttonBarButtonOnClick);
 

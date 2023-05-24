@@ -48,14 +48,26 @@ const getDrawObject = () => {
     "stroke-linejoin": "round",
     opacity: 0.6
   };
+
+  const optionHighlighter = {
+    stroke: color,
+    "stroke-width": 15,
+    "fill-opacity": 0,
+    // "stroke-linecap": "round",
+    // "stroke-linejoin": "round",
+    opacity: 0.6
+  };
   const markerOption = {
     fill: color
   };
 
   var drawObject;
   switch (shape) {
-    case "mouse paint":
+    case "pen":
       drawObject = draww.polyline().attr(option);
+      break;
+    case "highlight":
+      drawObject = draww.polyline().attr(optionHighlighter);
       break;
     case "ellipse":
       drawObject = draww.ellipse().attr(option);
@@ -75,7 +87,9 @@ const getDrawObject = () => {
   drawObject.draggable();
 
   drawObject.on("drawdone.apaydin", e => {
-    e.target.instance.attr({ opacity: 1 });
+    if (shape !== "highlight") {
+      e.target.instance.attr({ opacity: 1 });
+    }
     e.target.instance.off("drawdone.apaydin");
     // eslint-disable-next-line no-unused-vars
     drawObject.on("mouseover.apaydin", e => {
@@ -107,21 +121,21 @@ draww.on("touchstart", event => {
 });
 
 draww.on("mousemove", event => {
-  if (shape === "mouse paint" && shapes[index]) {
+  if ((shape === "pen" || shape === "highlight") && shapes[index]) {
     shapes[index].draw("point", event);
   }
 });
 
 draww.on("touchmove", event => {
-  if (shape === "mouse paint" && shapes[index]) {
+  if ((shape === "pen" || shape === "highlight") && shapes[index]) {
     shapes[index].draw("point", event);
   }
 });
 
 draww.on("mouseup", event => {
-  if (shape === "mouse paint") {
-    shapes[index].draw("stop", event);
-    shapes[index].draw("done");
+  if (shape === "pen" || shape === "highlight") {
+    // shapes[index].draw("stop", event);
+    shapes[index].draw("done", event);
   } else {
     shapes[index].draw(event);
   }
@@ -129,8 +143,8 @@ draww.on("mouseup", event => {
 });
 
 draww.on("touchend", event => {
-  if (shape === "mouse paint") {
-    shapes[index].draw("stop", event);
+  if (shape === "pen" || shape === "highlight") {
+    // shapes[index].draw("stop", event);
     shapes[index].draw("done");
   } else {
     shapes[index].draw(event);
