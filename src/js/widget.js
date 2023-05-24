@@ -163,6 +163,7 @@ ${evt.data.cssVariables}
         );
       }
       if (evt.data.type === "request-screen-annotate") {
+        lockDocumentBody();
         const screenAnnotateDiv = createScreenAnnotateToolDiv();
         const userowlAppDiv = document.getElementById("userowl-app");
         userowlAppDiv.appendChild(screenAnnotateDiv);
@@ -520,7 +521,9 @@ ${evt.data.cssVariables}
       background-color: #5D2CC6;
     }
 
-
+    body.uowl-locked {
+      overflow: hidden;
+    }
     
     
     @keyframes uowlAppearMinusY {
@@ -812,6 +815,7 @@ ${evt.data.cssVariables}
     nextButtonSpan.textContent = "Next";
     nextButton.appendChild(nextButtonSpan);
     nextButton.addEventListener("click", () => {
+      unlockDocumentBody();
       document.querySelector(".uowl-screen-annotate-tool").style =
         "visibility: hidden";
       feedbackFormIframe.contentWindow.postMessage(
@@ -889,6 +893,14 @@ ${evt.data.cssVariables}
     return satBBFrame;
   };
 
+  const lockDocumentBody = () => {
+    document.body.classList.add("uowl-locked");
+  };
+
+  const unlockDocumentBody = () => {
+    document.body.classList.remove("uowl-locked");
+  };
+
   const createScreenAnnotateToolDiv = () => {
     const screenAnnotateDiv = document.createElement("div");
     screenAnnotateDiv.classList.add("uowl-screen-annotate-tool");
@@ -910,6 +922,8 @@ ${evt.data.cssVariables}
     );
     satCloseButtonIcon.classList.add("uowl-sat-close-button-icon");
     satCloseButtonIcon.addEventListener("click", () => {
+      unlockDocumentBody();
+      // draww.clear();
       document.querySelector(".uowl-screen-annotate-tool").style =
         "visibility: hidden";
       feedbackFormIframe.contentWindow.postMessage(
@@ -973,6 +987,10 @@ ${evt.data.cssVariables}
 
   const takeScreenshot = () => {
     const cloneDoc = document.documentElement.cloneNode(true);
+    // draww.clear();
+    document
+      .querySelectorAll(".uowl-screen-annotate-tool")
+      .forEach(el => el.remove());
 
     Array.from(cloneDoc.querySelectorAll("script", "noscript")).forEach(el =>
       el.remove()
