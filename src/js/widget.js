@@ -495,6 +495,7 @@ ${evt.data.cssVariables}
       position: fixed;
       z-index: 2147483606;
       box-sizing: border-box;
+      cursor: crosshair;
     }
 
     .uowl-sat-button-bar-next-button-frame{
@@ -524,7 +525,21 @@ ${evt.data.cssVariables}
     body.uowl-locked {
       overflow: hidden;
     }
+
     
+    .uowl-draggable-svg {
+      cursor: move; /* fallback if grab cursor is unsupported */
+      cursor: grab;
+      cursor: -moz-grab;
+      cursor: -webkit-grab;
+    }
+  
+    /* (Optional) Apply a "closed-hand" cursor during drag operation. */
+    .uowl-draggable-svg:active {
+      cursor: grabbing;
+      cursor: -moz-grabbing;
+      cursor: -webkit-grabbing;
+    }
     
     @keyframes uowlAppearMinusY {
       from {

@@ -95,6 +95,7 @@ const getDrawObject = () => {
     drawObject.on("mouseover.apaydin", e => {
       drawObject.filterWith(shadowFilter);
     });
+    drawObject.addClass("uowl-draggable-svg");
   });
 
   // eslint-disable-next-line no-unused-vars
