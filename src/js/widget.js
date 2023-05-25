@@ -1,4 +1,5 @@
-import { draww } from "./main";
+/* eslint-disable no-unused-vars */
+import { deleteLastDrawElement, draww, hasElement } from "./main";
 
 (function() {
   // const script = document.currentScript;
@@ -164,10 +165,39 @@ ${evt.data.cssVariables}
       }
       if (evt.data.type === "request-screen-annotate") {
         lockDocumentBody();
+        hideWidgetButton();
+        feedbackFormDiv.setAttribute("data-is-open", "false");
+
         const screenAnnotateDiv = createScreenAnnotateToolDiv();
         const userowlAppDiv = document.getElementById("userowl-app");
         userowlAppDiv.appendChild(screenAnnotateDiv);
         draww.addTo("#uowl-sat-canvas");
+        draww.on("drawdone.apaydin", e => {
+          document
+            .querySelector(".uowl-sat-button-bar-undo-button")
+            .classList.remove("uowl-sat-button-bar-button-disabled");
+        });
+        draww.on("mousedown.apaydin", e => {
+          document
+            .querySelector(".uowl-sat-button-bar-frame")
+            .classList.add("uowl-hidden");
+        });
+        draww.on("mouseup.apaydin", e => {
+          document
+            .querySelector(".uowl-sat-button-bar-frame")
+            .classList.remove("uowl-hidden");
+        });
+
+        draww.on("touchstart.apaydin", e => {
+          document
+            .querySelector(".uowl-sat-button-bar-frame")
+            .classList.add("uowl-hidden");
+        });
+        draww.on("touchend.apaydin", e => {
+          document
+            .querySelector(".uowl-sat-button-bar-frame")
+            .classList.remove("uowl-hidden");
+        });
       }
       if (evt.data.type === "request-session-info") {
         const sessionInfo = getSessionInfo();
@@ -191,6 +221,20 @@ ${evt.data.cssVariables}
         feedbackButtonIframe.contentWindow.postMessage(evt.data, "*");
       }
     }
+  };
+
+  const hideWidgetButton = () => {
+    feedbackButtonIframe.contentWindow.postMessage(
+      { aud: "widget", type: "widget-visibility", isVisible: false },
+      "*"
+    );
+  };
+
+  const showWidgetButton = () => {
+    feedbackButtonIframe.contentWindow.postMessage(
+      { aud: "widget", type: "widget-visibility", isVisible: true },
+      "*"
+    );
   };
 
   const createAppDiv = () => {
@@ -378,6 +422,10 @@ ${evt.data.cssVariables}
       border-bottom-left-radius: 4px;
     }
 
+    .uowl-sat-close-button:hover {
+      background-color: #5D2CC6;
+    }
+
     .uowl-sat-close-button-icon {
       width: 1rem;
       height: 1rem;
@@ -394,12 +442,13 @@ ${evt.data.cssVariables}
       padding: 0.5rem; 
       background-color: #ffffff; 
       border-radius: 0.375rem; 
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
     }
 
     .uowl-sat-button-bar{
       display: grid; 
-      grid-template-columns: repeat(5, minmax(0, 1fr)) auto; 
+      grid-template-columns: repeat(7, minmax(0, 1fr)) auto; 
       gap: 0.5rem; 
     }
 
@@ -416,13 +465,18 @@ ${evt.data.cssVariables}
       border-width: 1px; 
     }
 
+    .uowl-sat-button-bar-button-disabled{
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
     .uowl-sat-button-bar-button:not(.uowl-sat-button-bar-button--selected){
       background-color: #ffffff;
       border-color: #E8E6EA; 
       color: #1C0849;
     }
 
-    .uowl-sat-button-bar-button:hover{
+    .uowl-sat-button-bar-button:hover:not(.uowl-sat-button-bar-button-disabled, .uowl-sat-button-bar-button--selected){
       background-color: #F4F3F5;
     }
 
@@ -467,11 +521,11 @@ ${evt.data.cssVariables}
       padding: 0.5rem; 
       background-color: #ffffff; 
       border-radius: 0.375rem; 
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
     .uowl-sat-button-bar-color-picker-popup>div{
       display: grid; 
-      grid-template-columns: repeat(5, minmax(0, 1fr)); 
+      grid-template-columns: repeat(6, minmax(0, 1fr)); 
       gap: 0.5rem; 
     }
 
@@ -517,9 +571,16 @@ ${evt.data.cssVariables}
       line-height: 1.25rem;
       background-color: #6d33e8;
       color: #ffffff;
+      cursor: pointer;
+      user-select: none;
     }
     .uowl-sat-button:hover {
       background-color: #5D2CC6;
+    }
+
+    .uowl-hidden {
+      opacity: 0;
+      visibility: hidden;
     }
 
     body.uowl-locked {
@@ -774,6 +835,49 @@ ${evt.data.cssVariables}
     return icon;
   };
 
+  const createUndoIcon = () => {
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke", "currentColor");
+
+    const iconPath = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+    iconPath.setAttribute("stroke-linecap", "round");
+    iconPath.setAttribute("stroke-linejoin", "round");
+    iconPath.setAttribute("d", "M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3");
+
+    icon.appendChild(iconPath);
+    return icon;
+  };
+
+  const createMaskIcon = () => {
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke", "currentColor");
+
+    const iconPath = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+    iconPath.setAttribute("stroke-linecap", "round");
+    iconPath.setAttribute("stroke-linejoin", "round");
+    iconPath.setAttribute(
+      "d",
+      "M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+    );
+
+    icon.appendChild(iconPath);
+    return icon;
+  };
+
   const createSATColorPickerButton = color => {
     const cpButton = document.createElement("div");
     cpButton.classList.add("uowl-sat-button-bar-color-picker-popup-button");
@@ -798,7 +902,14 @@ ${evt.data.cssVariables}
       colorPicker.setAttribute("data-color", ev.currentTarget.dataset.color);
     };
 
-    const colors = ["#f71108", "#f5b108", "#1e6be5", "#3a21ce", "#17bb84"];
+    const colors = [
+      "#f71108",
+      "#f5b108",
+      "#17bb84",
+      "#1e6be5",
+      "#3a21ce",
+      "#cccccc"
+    ];
     colors
       .map(color => createSATColorPickerButton(color))
       .map(cb => {
@@ -824,13 +935,15 @@ ${evt.data.cssVariables}
     const nextButtonParentDiv = document.createElement("div");
     nextButtonParentDiv.classList.add("uowl-sat-button-bar-next-button-frame");
 
-    const nextButton = document.createElement("button");
+    const nextButton = document.createElement("div");
     nextButton.classList.add("uowl-sat-button");
     const nextButtonSpan = document.createElement("span");
     nextButtonSpan.textContent = "Next";
     nextButton.appendChild(nextButtonSpan);
     nextButton.addEventListener("click", () => {
       unlockDocumentBody();
+      showWidgetButton();
+      feedbackFormDiv.setAttribute("data-is-open", "true");
       document.querySelector(".uowl-screen-annotate-tool").style =
         "visibility: hidden";
       feedbackFormIframe.contentWindow.postMessage(
@@ -866,6 +979,19 @@ ${evt.data.cssVariables}
       ev.currentTarget.classList.add("uowl-sat-button-bar-button--selected");
     };
 
+    const buttonBarUndoOnClick = ev => {
+      if (
+        !ev.currentTarget.classList.contains(
+          "uowl-sat-button-bar-button-disabled"
+        )
+      ) {
+        deleteLastDrawElement();
+        if (!hasElement()) {
+          ev.currentTarget.classList.add("uowl-sat-button-bar-button-disabled");
+        }
+      }
+    };
+
     const colorPickerOnClick = ev => {
       const isOpen = ev.currentTarget.dataset.open;
       if (isOpen === "false") {
@@ -892,6 +1018,16 @@ ${evt.data.cssVariables}
     penButton.appendChild(createPenIcon());
     penButton.addEventListener("click", buttonBarButtonOnClick);
 
+    const maskButton = createSATButtonBarButton("mask");
+    maskButton.appendChild(createMaskIcon());
+    maskButton.addEventListener("click", buttonBarButtonOnClick);
+
+    const undoButton = createSATButtonBarButton("undo");
+    undoButton.appendChild(createUndoIcon());
+    undoButton.classList.add("uowl-sat-button-bar-button-disabled");
+    undoButton.classList.add("uowl-sat-button-bar-undo-button");
+    undoButton.addEventListener("click", buttonBarUndoOnClick);
+
     const colorPicker = createSATButtonBarColorPicker();
     colorPicker.appendChild(createSATButtonBarColorPickerPopup());
     colorPicker.addEventListener("click", colorPickerOnClick);
@@ -900,12 +1036,40 @@ ${evt.data.cssVariables}
     satBB.appendChild(arrowButton);
     satBB.appendChild(highlightButton);
     satBB.appendChild(penButton);
+    satBB.appendChild(maskButton);
     satBB.appendChild(colorPicker);
+    satBB.appendChild(undoButton);
     satBB.appendChild(createSATNextButton());
 
     satBBFrame.appendChild(satBB);
 
     return satBBFrame;
+  };
+
+  const satCloseFN = () => {
+    unlockDocumentBody();
+    document
+      .querySelectorAll(".uowl-screen-annotate-tool")
+      .forEach(el => el.remove());
+    draww.clear();
+    showWidgetButton();
+    feedbackFormDiv.setAttribute("data-is-open", "true");
+    // draww.clear();
+    feedbackFormIframe.contentWindow.postMessage(
+      {
+        aud: "form",
+        type: "screen-annotate-result",
+        complete: false
+      },
+      "*"
+    );
+  };
+
+  const satEscapeHandler = e => {
+    if (e.key === "Escape") {
+      // escape key maps to keycode `27`
+      satCloseFN();
+    }
   };
 
   const lockDocumentBody = () => {
@@ -914,6 +1078,7 @@ ${evt.data.cssVariables}
 
   const unlockDocumentBody = () => {
     document.body.classList.remove("uowl-locked");
+    document.removeEventListener("keyup", satEscapeHandler);
   };
 
   const createScreenAnnotateToolDiv = () => {
@@ -927,29 +1092,17 @@ ${evt.data.cssVariables}
     const satCanvas = document.createElement("div");
     satCanvas.id = "uowl-sat-canvas";
     satCanvas.classList.add("uowl-sat-canvas");
+    document.addEventListener("keyup", satEscapeHandler);
 
     const satCloseButton = document.createElement("div");
     satCloseButton.classList.add("uowl-sat-close-button");
+    satCloseButton.addEventListener("click", satCloseFN);
 
     const satCloseButtonIcon = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "svg"
     );
     satCloseButtonIcon.classList.add("uowl-sat-close-button-icon");
-    satCloseButtonIcon.addEventListener("click", () => {
-      unlockDocumentBody();
-      // draww.clear();
-      document.querySelector(".uowl-screen-annotate-tool").style =
-        "visibility: hidden";
-      feedbackFormIframe.contentWindow.postMessage(
-        {
-          aud: "form",
-          type: "screen-annotate-result",
-          complete: false
-        },
-        "*"
-      );
-    });
 
     satCloseButtonIcon.setAttribute("fill", "none");
     satCloseButtonIcon.setAttribute("viewBox", "0 0 24 24");
@@ -1002,7 +1155,7 @@ ${evt.data.cssVariables}
 
   const takeScreenshot = () => {
     const cloneDoc = document.documentElement.cloneNode(true);
-    // draww.clear();
+    draww.clear();
     document
       .querySelectorAll(".uowl-screen-annotate-tool")
       .forEach(el => el.remove());

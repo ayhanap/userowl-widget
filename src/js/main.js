@@ -20,6 +20,15 @@ const shapes = [];
 let index = 0;
 let shape;
 
+export const deleteLastDrawElement = () => {
+  shapes.pop().remove();
+  index--;
+};
+
+export const hasElement = () => {
+  return shapes.length > 0;
+};
+
 const shadowFilter = draww.filter(function(add) {
   add.dropShadow(add.$source, 0, 0, 3);
   // this.size("2500%", "2000%").move("-1250%", "-1250%");
@@ -42,8 +51,17 @@ const getDrawObject = () => {
   // const color = "#ff0000";
   const option = {
     stroke: color,
-    "stroke-width": 5,
+    "stroke-width": 6,
     "fill-opacity": 0,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    opacity: 0.6
+  };
+
+  const maskOption = {
+    stroke: color,
+    fill: color,
+    "stroke-width": 6,
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
     opacity: 0.6
@@ -51,7 +69,7 @@ const getDrawObject = () => {
 
   const optionHighlighter = {
     stroke: color,
-    "stroke-width": 15,
+    "stroke-width": 16,
     "fill-opacity": 0,
     // "stroke-linecap": "round",
     // "stroke-linejoin": "round",
@@ -75,6 +93,9 @@ const getDrawObject = () => {
     case "rect":
       drawObject = draww.rect().attr(option);
       break;
+    case "mask":
+      drawObject = draww.rect().attr(maskOption);
+      break;
     case "arrow":
       drawObject = draww.arrow().attr(option);
       drawObject.reference("marker-end").attr(markerOption);
@@ -96,6 +117,7 @@ const getDrawObject = () => {
       drawObject.filterWith(shadowFilter);
     });
     drawObject.addClass("uowl-draggable-svg");
+    draww.fire("drawdone");
   });
 
   // eslint-disable-next-line no-unused-vars
