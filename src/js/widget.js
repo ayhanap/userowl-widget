@@ -327,6 +327,11 @@ ${evt.data.cssVariables}
       --uowl-widget-form-height: 1000px;
       --uowl-widget-form-top-plus-bottom: 0px;
     }
+    .userowl-app ::after {
+      box-sizing: border-box; /* 1 */
+      border-width: 0; /* 2 */
+      border-style: solid; /* 2 */
+    }
     .userowl-feedback-button {
       position: fixed;
       z-index: 2147483615;
