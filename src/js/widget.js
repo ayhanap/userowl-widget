@@ -326,6 +326,7 @@ ${evt.data.cssVariables}
       --uowl-widget-form-width: 1000px;
       --uowl-widget-form-height: 1000px;
       --uowl-widget-form-top-plus-bottom: 0px;
+      font-soze: 16px;
     }
     .userowl-app *,:after,:before {
       box-sizing: border-box;
@@ -408,8 +409,8 @@ ${evt.data.cssVariables}
     }
 
     .uowl-sat-button-bar-button svg {
-      width: 1.5rem;
-      height: 1.5rem;
+      width: 1.5em;
+      height: 1.5em;
     }
 
     .uowl-sat-close-button {
@@ -432,8 +433,8 @@ ${evt.data.cssVariables}
     }
 
     .uowl-sat-close-button-icon {
-      width: 1rem;
-      height: 1rem;
+      width: 1em;
+      height: 1em;
       stroke: #ffffff;
     }
 
@@ -444,9 +445,9 @@ ${evt.data.cssVariables}
       position: fixed;
       z-index: 2147483635;
       width: max-content;
-      padding: 0.5rem; 
+      padding: 0.5em; 
       background-color: #ffffff; 
-      border-radius: 0.375rem; 
+      border-radius: 0.375em; 
       box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
       transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
     }
@@ -454,19 +455,19 @@ ${evt.data.cssVariables}
     .uowl-sat-button-bar{
       display: grid; 
       grid-template-columns: repeat(7, minmax(0, 1fr)) auto; 
-      gap: 0.5rem; 
+      gap: 0.5em; 
     }
 
     .uowl-sat-button-bar-button{
       cursor: pointer;
       display: flex; 
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem; 
-      padding-left: 0.5rem;
-      padding-right: 0.5rem; 
+      padding-top: 0.5em;
+      padding-bottom: 0.5em; 
+      padding-left: 0.5em;
+      padding-right: 0.5em; 
       justify-content: center; 
       align-items: center; 
-      border-radius: 0.375rem; 
+      border-radius: 0.375em; 
       border-width: 1px; 
     }
 
@@ -499,8 +500,8 @@ ${evt.data.cssVariables}
     .uowl-sat-button-bar-color-picker{
       position: relative;
       cursor: pointer;
-      width: 1.75rem;
-      height: 1.75rem;
+      width: 1.75em;
+      height: 1.75em;
       border-radius: 9999px; 
       border-width: 1px; 
       background-color: #3a21ce;
@@ -523,21 +524,21 @@ ${evt.data.cssVariables}
       position: absolute;
       z-index: 2147483635;
       width: max-content;
-      padding: 0.5rem; 
+      padding: 0.5em; 
       background-color: #ffffff; 
-      border-radius: 0.375rem; 
+      border-radius: 0.375em; 
       box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
     .uowl-sat-button-bar-color-picker-popup>div{
       display: grid; 
       grid-template-columns: repeat(6, minmax(0, 1fr)); 
-      gap: 0.5rem; 
+      gap: 0.5em; 
     }
 
     .uowl-sat-button-bar-color-picker-popup-button{
       cursor: pointer;
-      width: 1.75rem;
-      height: 1.75rem;
+      width: 1.75em;
+      height: 1.75em;
       border-radius: 9999px; 
       border-width: 1px; 
       background-color: #ff0000;
@@ -567,13 +568,13 @@ ${evt.data.cssVariables}
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      border-radius: 0.375rem;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      padding-left: 0.75rem;
-      padding-right: 0.75rem;
+      border-radius: 0.375em;
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      padding-left: 0.75em;
+      padding-right: 0.75em;
       font-weight: 600;
-      line-height: 1.25rem;
+      line-height: 1.25em;
       background-color: #6d33e8;
       color: #ffffff;
       cursor: pointer;
