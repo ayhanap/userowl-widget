@@ -327,10 +327,10 @@ ${evt.data.cssVariables}
       --uowl-widget-form-height: 1000px;
       --uowl-widget-form-top-plus-bottom: 0px;
     }
-    .userowl-app ::after {
-      box-sizing: border-box; /* 1 */
-      border-width: 0; /* 2 */
-      border-style: solid; /* 2 */
+    .userowl-app *,:after,:before {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
     }
     .userowl-feedback-button {
       position: fixed;
