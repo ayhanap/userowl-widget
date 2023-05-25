@@ -326,7 +326,7 @@ ${evt.data.cssVariables}
       --uowl-widget-form-width: 1000px;
       --uowl-widget-form-height: 1000px;
       --uowl-widget-form-top-plus-bottom: 0px;
-      font-soze: 16px;
+      font-size: 16px;
     }
     .userowl-app *,:after,:before {
       box-sizing: border-box;
