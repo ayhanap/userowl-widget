@@ -4,7 +4,7 @@ import {
   computePosition,
   flip,
   offset,
-  shift
+  shift,
 } from "@floating-ui/dom";
 import "@svgdotjs/svg.filter.js";
 import {
@@ -16,7 +16,7 @@ import {
   SVG,
   Svg,
   Text,
-  extend
+  extend,
 } from "@svgdotjs/svg.js";
 
 export class CommentCircle extends G {
@@ -71,7 +71,7 @@ export const closeOpenCommentPopups = () => {
     ".uowl-sat-comment-group.uowl-sat-comment-group-open"
   );
   if (openCommentCircles.length > 0) {
-    openCommentCircles.forEach(el =>
+    openCommentCircles.forEach((el) =>
       el.classList.remove("uowl-sat-comment-group-open")
     );
     return true;
@@ -99,7 +99,7 @@ const repositionPopupWithEvent: EventListener = (e: CustomEvent) => {
   // e.detail.handler.el.translate(0, 0);
   const commentCircleInstance = target.instance as CommentCircle;
   commentCircleInstance.transform({
-    translate: [x, y]
+    translate: [x, y],
   });
 
   if (e.type !== "drawstart") {
@@ -119,11 +119,11 @@ const repositionPopupWithEvent: EventListener = (e: CustomEvent) => {
   ) as HTMLElement;
 
   const options = {
-    placement: "bottom" as Placement
+    placement: "bottom" as Placement,
   };
   computePosition(button, popup, {
     ...options,
-    middleware: [offset(-5), shift(), flip()]
+    middleware: [offset(-5), shift(), flip()],
   }).then(({ x, y }) => {
     const buttonRect = button.getBoundingClientRect();
     popup.setAttribute(
@@ -162,15 +162,15 @@ const addDragEvents = (svg: Svg, commentCircle: CommentCircle) => {
     commentCircle.setMoved(false);
     svg.fire("beforedrag");
   });
-  commentCircle.on("dragstart", e => {
+  commentCircle.on("dragstart", (e) => {
     // eslint-disable-next-line no-console
     console.log("dragstart", e);
   });
-  commentCircle.on("dragmove", e => {
+  commentCircle.on("dragmove", (e) => {
     // eslint-disable-next-line no-console
     console.log("dragmove", e);
   });
-  commentCircle.on("dragend", e => {
+  commentCircle.on("dragend", (e) => {
     // eslint-disable-next-line no-console
     console.log("dragend", e);
     svg.fire("dragend", e);
@@ -215,8 +215,8 @@ extend(Container, {
                     <div>
                         <textarea name="comment" class="uowl-sat-comment-textarea" id="comment" placeholder="Enter a comment"></textarea>
                         <div>
-                            <button class="uowl-sat-comment-delete"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path></svg><span class="sr-only">Delete attachment</span></button>
-                            <button type="button" class="uowl-sat-comment-done">Done</button>
+                            <div class="uowl-sat-comment-delete"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path></svg><span class="sr-only">Delete attachment</span></div>
+                            <div type="button" class="uowl-sat-comment-done">Done</div>
                         </div>
                     </div>
                 </div>
@@ -244,7 +244,7 @@ extend(Container, {
       "dominant-baseline": "central",
       "font-family": "Inter",
       "font-size": 16,
-      fill: "white"
+      fill: "white",
     });
     group.put(animatedCircle);
     group.put(circle);
@@ -294,5 +294,5 @@ extend(Container, {
     group.setInitialized(true);
 
     return group;
-  }
+  },
 } as ExtendedSvg);
