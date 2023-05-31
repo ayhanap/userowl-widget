@@ -66,7 +66,7 @@ declare global {
     now.setSeconds(now.getSeconds() + expires_in);
     const widgetIdToken: WidgetIdToken = {
       access_token,
-      exp_date: now.getTime()
+      exp_date: now.getTime(),
     };
     localStorage.setItem(widgetIdTokenName, JSON.stringify(widgetIdToken));
   }
@@ -151,7 +151,7 @@ ${evt.data.cssVariables}
       }
       if (evt.data.type === "widget-ready") {
         isWidgetReady = true;
-        getWidgetToken().then(widgetToken =>
+        getWidgetToken().then((widgetToken) =>
           feedbackButtonIframe.contentWindow.postMessage(
             { aud: "widget", type: "widget-token", widgetToken: widgetToken },
             "*"
@@ -174,7 +174,7 @@ ${evt.data.cssVariables}
           {
             aud: "form",
             type: "screenshot-result",
-            screenshot: screenshotData
+            screenshot: screenshotData,
           },
           "*"
         );
@@ -188,29 +188,29 @@ ${evt.data.cssVariables}
         const userowlAppDiv = document.getElementById("userowl-app");
         userowlAppDiv.appendChild(screenAnnotateDiv);
         draww.addTo("#uowl-sat-canvas");
-        draww.on("drawdone.apaydin", e => {
+        draww.on("drawdone.apaydin", (e) => {
           document
             .querySelector(".uowl-sat-button-bar-undo-button")
             .classList.remove("uowl-sat-button-bar-button-disabled");
         });
 
-        draww.on("beforedrag.apaydin", e => {
+        draww.on("beforedrag.apaydin", (e) => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.add("uowl-hidden");
         });
-        draww.on("dragend.apaydin", e => {
+        draww.on("dragend.apaydin", (e) => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.remove("uowl-hidden");
         });
 
-        draww.on("pointerdown.apaydin", e => {
+        draww.on("pointerdown.apaydin", (e) => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.add("uowl-hidden");
         });
-        draww.on("pointerup.apaydin", e => {
+        draww.on("pointerup.apaydin", (e) => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.remove("uowl-hidden");
@@ -233,7 +233,7 @@ ${evt.data.cssVariables}
           {
             aud: "form",
             type: "session-info-result",
-            sessionInfo: sessionInfo
+            sessionInfo: sessionInfo,
           },
           "*"
         );
@@ -283,7 +283,7 @@ ${evt.data.cssVariables}
     feedbackFormDiv.appendChild(feedbackFormInnerDiv);
 
     //feedbackButtonIframe.addEventListener('load', () => {
-    window.addEventListener("message", evt => handleMessage(evt));
+    window.addEventListener("message", (evt) => handleMessage(evt));
     // });
 
     feedbackButtonIframe.addEventListener("load", () => {
@@ -293,7 +293,7 @@ ${evt.data.cssVariables}
             {
               aud: "widget",
               type: "parent-listening",
-              widgetIdToken: getWidgetIdToken()
+              widgetIdToken: getWidgetIdToken(),
             },
             "*"
           );
@@ -310,7 +310,7 @@ ${evt.data.cssVariables}
             {
               aud: "form",
               type: "parent-listening",
-              widgetIdToken: getWidgetIdToken()
+              widgetIdToken: getWidgetIdToken(),
             },
             "*"
           );
@@ -698,6 +698,7 @@ ${evt.data.cssVariables}
       font-weight: 600;
       color: #ffffff;
       box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      cursor: pointer;
     }
     .uowl-sat-comment-done:hover {
       background-color: #5D2CC6;
@@ -712,6 +713,10 @@ ${evt.data.cssVariables}
 
     .uowl-sat-comment-delete {
       color: #786c89;
+      display: flex;
+      align-content: center;
+      flex-wrap: wrap;
+      cursor: pointer;
     }
 
     .uowl-sat-comment-delete:hover {
@@ -1108,15 +1113,15 @@ ${evt.data.cssVariables}
       "#17bb84",
       "#1e6be5",
       "#3a21ce",
-      "#cccccc"
+      "#cccccc",
     ];
     colors
-      .map(color => createSATColorPickerButton(color))
-      .map(cb => {
+      .map((color) => createSATColorPickerButton(color))
+      .map((cb) => {
         cb.addEventListener("click", colorPickerSelectOnClick);
         return cb;
       })
-      .forEach(cb => cpPopupGrid.appendChild(cb));
+      .forEach((cb) => cpPopupGrid.appendChild(cb));
 
     cpPopupFrame.appendChild(cpPopupGrid);
 
@@ -1152,7 +1157,7 @@ ${evt.data.cssVariables}
         {
           aud: "form",
           type: "screen-annotate-result",
-          complete: true
+          complete: true,
         },
         "*"
       );
@@ -1178,7 +1183,7 @@ ${evt.data.cssVariables}
 
     const buttonBarButtonOnClick = (ev: MouseEvent | TouchEvent) => {
       closeOpenCommentPopups();
-      document.querySelectorAll(".uowl-sat-button-bar-button").forEach(el => {
+      document.querySelectorAll(".uowl-sat-button-bar-button").forEach((el) => {
         el.classList.remove("uowl-sat-button-bar-button--selected");
       });
       (ev.currentTarget as HTMLElement).classList.add(
@@ -1268,7 +1273,7 @@ ${evt.data.cssVariables}
     closeOpenCommentPopups();
     document
       .querySelectorAll(".uowl-screen-annotate-tool")
-      .forEach(el => el.remove());
+      .forEach((el) => el.remove());
     clearDrawing();
     showWidgetButton();
     feedbackFormDiv.setAttribute("data-is-open", "true");
@@ -1277,7 +1282,7 @@ ${evt.data.cssVariables}
       {
         aud: "form",
         type: "screen-annotate-result",
-        complete: false
+        complete: false,
       },
       "*"
     );
@@ -1377,9 +1382,9 @@ ${evt.data.cssVariables}
     clearDrawing();
     document
       .querySelectorAll(".uowl-screen-annotate-tool")
-      .forEach(el => el.remove());
+      .forEach((el) => el.remove());
 
-    Array.from(cloneDoc.querySelectorAll("script, noscript")).forEach(el =>
+    Array.from(cloneDoc.querySelectorAll("script, noscript")).forEach((el) =>
       el.remove()
     );
 
@@ -1394,15 +1399,15 @@ ${evt.data.cssVariables}
       commentMap = Array.from(
         screenAnnotateTool.querySelectorAll(".uowl-sat-comment-group")
       )
-        .map(el => el as HTMLElement)
-        .map(commentGroupEl => {
+        .map((el) => el as HTMLElement)
+        .map((commentGroupEl) => {
           const number = +commentGroupEl.dataset.number;
           const value = (commentGroupEl.querySelector(
             ".uowl-sat-comment-textarea"
           ) as HTMLTextAreaElement).value;
           return {
             number,
-            value
+            value,
           };
         });
     }
@@ -1411,7 +1416,7 @@ ${evt.data.cssVariables}
       .querySelectorAll(
         ".userowl-feedback-form, .userowl-feedback-button, .uowl-screen-annotate-tool>:not(.uowl-sat-canvas)"
       )
-      .forEach(el => el.remove());
+      .forEach((el) => el.remove());
 
     // cloneDoc
     // .querySelectorAll(
@@ -1421,11 +1426,11 @@ ${evt.data.cssVariables}
     // })
 
     const styleText = Array.from(cloneDoc.querySelectorAll("style"))
-      .filter(styleElement => styleElement.innerText === "")
-      .map(styleElement => {
+      .filter((styleElement) => styleElement.innerText === "")
+      .map((styleElement) => {
         const rules: string[] = [];
 
-        [...styleElement.sheet.cssRules].forEach(cssRule => {
+        [...styleElement.sheet.cssRules].forEach((cssRule) => {
           rules.push(cssRule.cssText);
         });
 
@@ -1486,11 +1491,11 @@ ${evt.data.cssVariables}
       html: htmlString,
       windowSize: {
         x: window.innerWidth,
-        y: window.innerHeight
+        y: window.innerHeight,
       },
       commentMap: commentMap,
       devicePixelRatio: window.devicePixelRatio,
-      deviceType: "desktop"
+      deviceType: "desktop",
     };
   };
 
@@ -1501,19 +1506,19 @@ ${evt.data.cssVariables}
         userAgent: navigator.userAgent,
         windowPosition: {
           x: window.screenLeft,
-          y: window.screenTop
+          y: window.screenTop,
         },
         windowSize: {
           x: window.innerWidth,
-          y: window.innerHeight
+          y: window.innerHeight,
         },
         screenResolution: {
           x: window.screen.width,
-          y: window.screen.height
+          y: window.screen.height,
         },
         colorDepth: window.screen.colorDepth,
-        devicePixelRatio: window.devicePixelRatio
-      }
+        devicePixelRatio: window.devicePixelRatio,
+      },
     };
   };
 
