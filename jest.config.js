@@ -1,7 +1,13 @@
 module.exports = {
-  setupTestFrameworkScriptFile: "<rootDir>/testSetup.js",
+  globals: {
+    "ts-jest": {
+      tsconfig: "tsconfig.json"
+    }
+  },
+  moduleFileExtensions: ["ts", "js"],
   transform: {
-    "^.+\\.[t|j]sx?$": "babel-jest",
-    "^.+\\.[t|j]s?$": "babel-jest"
-  }
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  },
+  testMatch: ["**/test/**/*.test.(ts|js)"],
+  testEnvironment: "node"
 };

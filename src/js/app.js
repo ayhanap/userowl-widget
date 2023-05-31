@@ -1,1 +1,1 @@
-require("./widget.js");
+require("./widget.ts");

@@ -4,13 +4,23 @@ env:
   es6: true
   node: true
   jest: true
-settings:
-  react:
-    version: 16.6.1
 extends:
-  - eslint:recommended
+  - airbnb-base
+  - airbnb-typescript
 parserOptions:
-  ecmaFeatures:
-    jsx: false
-  ecmaVersion: 2018
+  ecmaVersion: latest
   sourceType: module
+  project: ./tsconfig.json
+rules: { "@typescript-eslint/no-unused-vars": warn, "arrow-body-style": 0 }
+settings:
+  import/resolver:
+    node: true
+    typescript: true
+    airbnb-typescript: true
+    alias:
+      extensions:
+        - ".js"
+        - ".jsx"
+      map:
+        - - "@"
+          - "."

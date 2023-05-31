@@ -1,5 +1,15 @@
 /* eslint-disable no-unused-vars */
-import { deleteLastDrawElement, draww, hasElement } from "./main";
+import { closeOpenCommentPopups } from "./comment-circle";
+import { clearDrawing, deleteLastDrawElement, draww, hasElement } from "./main";
+
+declare global {
+  interface Window {
+    UserowlSettings: {
+      basePath: string;
+      appId: string;
+    };
+  }
+}
 
 (function() {
   // const script = document.currentScript;
@@ -32,7 +42,12 @@ import { deleteLastDrawElement, draww, hasElement } from "./main";
     return widgetToken.access_token;
   }
 
-  function getWidgetIdToken() {
+  type WidgetIdToken = {
+    access_token: string;
+    exp_date: number;
+  };
+
+  function getWidgetIdToken(): WidgetIdToken {
     const widgetIdTokenName = `userowlWidgetIdToken-${window.UserowlSettings.appId}`;
     const widgetIdTokenInLocalStorage = localStorage.getItem(widgetIdTokenName);
     if (widgetIdTokenInLocalStorage) {
@@ -45,13 +60,14 @@ import { deleteLastDrawElement, draww, hasElement } from "./main";
     return undefined;
   }
 
-  function setWidgetIdToken(access_token, expires_in) {
+  function setWidgetIdToken(access_token: string, expires_in: number) {
     const widgetIdTokenName = `userowlWidgetIdToken-${window.UserowlSettings.appId}`;
     var now = new Date();
     now.setSeconds(now.getSeconds() + expires_in);
-    const widgetIdToken = {};
-    widgetIdToken.access_token = access_token;
-    widgetIdToken.exp_date = now.getTime();
+    const widgetIdToken: WidgetIdToken = {
+      access_token,
+      exp_date: now.getTime()
+    };
     localStorage.setItem(widgetIdTokenName, JSON.stringify(widgetIdToken));
   }
 
@@ -63,9 +79,9 @@ import { deleteLastDrawElement, draww, hasElement } from "./main";
     iframeStyle.position = "static";
     iframeStyle.width = "100%";
     iframeStyle.height = "100%";
-    iframeStyle.border = 0;
-    iframeStyle.margin = 0;
-    iframeStyle.padding = 0;
+    iframeStyle.border = "0";
+    iframeStyle.margin = "0";
+    iframeStyle.padding = "0";
 
     const widgetUrl = `${basePath}/projects/${window.UserowlSettings.appId}/widget`;
 
@@ -87,9 +103,9 @@ import { deleteLastDrawElement, draww, hasElement } from "./main";
     iframeStyle.position = "static";
     iframeStyle.width = "100%";
     iframeStyle.height = "100%";
-    iframeStyle.border = 0;
-    iframeStyle.margin = 0;
-    iframeStyle.padding = 0;
+    iframeStyle.border = "0";
+    iframeStyle.margin = "0";
+    iframeStyle.padding = "0";
 
     const formUrl = `${basePath}/projects/${window.UserowlSettings.appId}/widgetForm`;
 
@@ -113,13 +129,13 @@ import { deleteLastDrawElement, draww, hasElement } from "./main";
   let isFormReady = false;
   let isWidgetReady = false;
 
-  let feedbackButtonDiv,
-    feedbackButtonIframe,
-    feedbackFormDiv,
-    feedbackFormInnerDiv,
-    feedbackFormIframe;
+  let feedbackButtonDiv: HTMLDivElement,
+    feedbackButtonIframe: HTMLIFrameElement,
+    feedbackFormDiv: HTMLDivElement,
+    feedbackFormInnerDiv: HTMLDivElement,
+    feedbackFormIframe: HTMLIFrameElement;
 
-  const handleMessage = evt => {
+  const handleMessage = (evt: MessageEvent) => {
     if ("aud" in evt.data && evt.data.aud === "parent" && "type" in evt.data) {
       if (evt.data.type === "css-variables") {
         const styleTag = document.getElementById("userowl-app-style-vars");
@@ -177,27 +193,39 @@ ${evt.data.cssVariables}
             .querySelector(".uowl-sat-button-bar-undo-button")
             .classList.remove("uowl-sat-button-bar-button-disabled");
         });
-        draww.on("mousedown.apaydin", e => {
+
+        draww.on("beforedrag.apaydin", e => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.add("uowl-hidden");
         });
-        draww.on("mouseup.apaydin", e => {
+        draww.on("dragend.apaydin", e => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.remove("uowl-hidden");
         });
 
-        draww.on("touchstart.apaydin", e => {
+        draww.on("pointerdown.apaydin", e => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.add("uowl-hidden");
         });
-        draww.on("touchend.apaydin", e => {
+        draww.on("pointerup.apaydin", e => {
           document
             .querySelector(".uowl-sat-button-bar-frame")
             .classList.remove("uowl-hidden");
         });
+
+        // draww.on("touchstart.apaydin", (e) => {
+        //   document
+        //     .querySelector(".uowl-sat-button-bar-frame")
+        //     .classList.add("uowl-hidden");
+        // });
+        // draww.on("touchend.apaydin", (e) => {
+        //   document
+        //     .querySelector(".uowl-sat-button-bar-frame")
+        //     .classList.remove("uowl-hidden");
+        // });
       }
       if (evt.data.type === "request-session-info") {
         const sessionInfo = getSessionInfo();
@@ -332,6 +360,7 @@ ${evt.data.cssVariables}
       box-sizing: border-box;
       border-width: 0;
       border-style: solid;
+      border-color: #e8e6ea;
     }
     .userowl-feedback-button {
       position: fixed;
@@ -343,6 +372,7 @@ ${evt.data.cssVariables}
       bottom: var(--uowl-widget-button-bottom);
       right: var(--uowl-widget-button-right);
       transform: var(--uowl-widget-button-transform);
+      user-select: none;
     }
     .userowl-feedback-form {
       position: fixed;
@@ -454,7 +484,7 @@ ${evt.data.cssVariables}
 
     .uowl-sat-button-bar{
       display: grid; 
-      grid-template-columns: repeat(7, minmax(0, 1fr)) auto; 
+      grid-template-columns: repeat(8, minmax(0, 1fr)) auto; 
       gap: 0.5em; 
     }
 
@@ -584,6 +614,130 @@ ${evt.data.cssVariables}
       background-color: #5D2CC6;
     }
 
+
+    .uowl-sat-comment-popup{
+      width: 400px;
+      height: 225px;
+      visibility: hidden;
+      cursor: auto;
+    }
+
+    .uowl-sat-comment-group {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .uowl-sat-comment-group.uowl-sat-comment-group-open > .uowl-sat-comment-popup {
+      visibility: visible;
+    }
+
+    .uowl-sat-comment-popup > div {
+      padding: 1.25em; 
+      width: 100%; 
+      height: 100%; 
+      cursor: auto; 
+    }
+
+    .uowl-sat-comment-popup > div > div {
+      background-color: #ffffff; 
+      height: 100%; 
+      border-radius: 0.375em; 
+      box-shadow: 0 0 0 1px #0000000D, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+    }
+
+    .uowl-sat-comment-popup > div > div > div {
+      display: flex; 
+      padding-left: 0.75em;
+      padding-right: 0.75em; 
+      padding-top: 1em;
+      padding-bottom: 1em; 
+      flex-direction: column; 
+      height: 100%; 
+    }
+
+
+    .uowl-sat-comment-popup > div > div > div > div {
+      display: flex; 
+      margin-top: 1.25rem; 
+      justify-content: space-between; 
+    }
+
+    .uowl-sat-comment-textarea {
+      display: block; 
+      padding-top: 0.375em;
+      padding-bottom: 0.375em; 
+      padding-left: 0.75em;
+      padding-right: 0.75em; 
+      color: #111827; 
+      font-size: 0.875em;
+      line-height: 1.5em; 
+      width: 100%; 
+      height: 100%; 
+      border-radius: 0.375em; 
+      border-width: 0; 
+      border-color: #D1D5DB; 
+      resize: none; 
+      box-shadow: inset 0 0 0 1px #D1D5DB, 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
+    }
+
+    .uowl-sat-comment-done {
+      display: flex;
+      align-items: flex-end;
+      width: auto;
+      justify-content: center;
+      border-radius: 0.375em;
+      --tw-bg-opacity: 1;
+      background-color: #6d33e8;
+      padding-left: 0.75em;
+      padding-right: 0.75em;
+      margin-left: 0.75em;
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      font-size: 0.875em;
+      line-height: 1.25em;
+      font-weight: 600;
+      color: #ffffff;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    }
+    .uowl-sat-comment-done:hover {
+      background-color: #5D2CC6;
+    }
+
+    .uowl-sat-comment-done:focus-visible {
+      outline-style: solid;
+      outline-width: 2px;
+      outline-offset: 2px;
+      outline-color: #6d33e8;
+    }
+
+    .uowl-sat-comment-delete {
+      color: #786c89;
+    }
+
+    .uowl-sat-comment-delete:hover {
+      color: #EF4444;
+    }
+
+    .uowl-sat-comment-delete > svg {
+      width: 1em; 
+      height: 1em; 
+    }
+
+    .uowl-sat-comment-textarea:focus {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      box-shadow: inset 0 0 0 2px #6d33e8;
+    }
+
+
+    .uowl-sat-comment-textarea::-moz-placeholder {
+      color: #a7a0b1;
+    }
+
+    .uowl-sat-comment-textarea::placeholder {
+      color: #a7a0b1;
+    }
+
     .uowl-hidden {
       opacity: 0;
       visibility: hidden;
@@ -594,7 +748,7 @@ ${evt.data.cssVariables}
     }
 
     
-    .uowl-draggable-svg {
+    .uowl-draggable-svg:not(.uowl-sat-comment-group) {
       cursor: move; /* fallback if grab cursor is unsupported */
       cursor: grab;
       cursor: -moz-grab;
@@ -739,6 +893,19 @@ ${evt.data.cssVariables}
       .userowl-feedback-form[data-is-open="false"] > .userowl-feedback-form-inner {
         animation-name: uowlHidePlusY;
       }
+
+      .uowl-sat-button-bar-next-button-frame {
+        grid-row-start: 2;
+        grid-column: 5 / span 2;
+        justify-content: end;
+      }
+      .uowl-sat-button-bar {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+      .uowl-sat-button-bar-color-picker-popup {
+        left: -16px;
+        transform: none;
+      }
     
     }
     `;
@@ -746,8 +913,7 @@ ${evt.data.cssVariables}
     const css = document.createElement("style");
     css.type = "text/css";
 
-    if (css.styleSheet) css.styleSheet.cssText = styles;
-    else css.appendChild(document.createTextNode(styles));
+    css.appendChild(document.createTextNode(styles));
 
     return css;
   };
@@ -884,11 +1050,34 @@ ${evt.data.cssVariables}
     return icon;
   };
 
-  const createSATColorPickerButton = color => {
+  const createCommentIcon = () => {
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke", "currentColor");
+
+    const iconPath = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+    iconPath.setAttribute("stroke-linecap", "round");
+    iconPath.setAttribute("stroke-linejoin", "round");
+    iconPath.setAttribute(
+      "d",
+      "M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
+    );
+
+    icon.appendChild(iconPath);
+    return icon;
+  };
+
+  const createSATColorPickerButton = (color: string) => {
     const cpButton = document.createElement("div");
     cpButton.classList.add("uowl-sat-button-bar-color-picker-popup-button");
     cpButton.setAttribute("data-color", color);
-    cpButton.style = `background-color : ${color}`;
+    cpButton.setAttribute("style", `background-color : ${color}`);
     return cpButton;
   };
 
@@ -899,13 +1088,18 @@ ${evt.data.cssVariables}
     const cpPopupGrid = document.createElement("div");
     // cpPopupGrid.classList.add("uowl-sat-button-bar");
 
-    const colorPickerSelectOnClick = ev => {
+    const colorPickerSelectOnClick = (ev: MouseEvent | TouchEvent) => {
+      const currentTarget = ev.currentTarget as HTMLElement;
+
       const colorPicker = document.querySelector(
         ".uowl-sat-button-bar-color-picker"
       );
 
-      colorPicker.style = `background-color : ${ev.currentTarget.dataset.color}`;
-      colorPicker.setAttribute("data-color", ev.currentTarget.dataset.color);
+      colorPicker.setAttribute(
+        "style",
+        `background-color : ${currentTarget.dataset.color}`
+      );
+      colorPicker.setAttribute("data-color", currentTarget.dataset.color);
     };
 
     const colors = [
@@ -948,10 +1142,12 @@ ${evt.data.cssVariables}
     nextButton.appendChild(nextButtonSpan);
     nextButton.addEventListener("click", () => {
       unlockDocumentBody();
+      closeOpenCommentPopups();
       showWidgetButton();
       feedbackFormDiv.setAttribute("data-is-open", "true");
-      document.querySelector(".uowl-screen-annotate-tool").style =
-        "visibility: hidden";
+      document
+        .querySelector(".uowl-screen-annotate-tool")
+        .setAttribute("style", "visibility: hidden");
       feedbackFormIframe.contentWindow.postMessage(
         {
           aud: "form",
@@ -965,7 +1161,9 @@ ${evt.data.cssVariables}
     return nextButtonParentDiv;
   };
 
-  const createSATButtonBarButton = type => {
+  const createSATButtonBarButton = (
+    type: "rect" | "arrow" | "highlight" | "pen" | "mask" | "comment" | "undo"
+  ) => {
     const satBBButton = document.createElement("div");
     satBBButton.classList.add("uowl-sat-button-bar-button");
     satBBButton.setAttribute("data-type", type);
@@ -978,32 +1176,40 @@ ${evt.data.cssVariables}
     const satBB = document.createElement("div");
     satBB.classList.add("uowl-sat-button-bar");
 
-    const buttonBarButtonOnClick = ev => {
+    const buttonBarButtonOnClick = (ev: MouseEvent | TouchEvent) => {
+      closeOpenCommentPopups();
       document.querySelectorAll(".uowl-sat-button-bar-button").forEach(el => {
         el.classList.remove("uowl-sat-button-bar-button--selected");
       });
-      ev.currentTarget.classList.add("uowl-sat-button-bar-button--selected");
+      (ev.currentTarget as HTMLElement).classList.add(
+        "uowl-sat-button-bar-button--selected"
+      );
     };
 
-    const buttonBarUndoOnClick = ev => {
+    const buttonBarUndoOnClick = (ev: MouseEvent | TouchEvent) => {
+      closeOpenCommentPopups();
       if (
-        !ev.currentTarget.classList.contains(
+        !(ev.currentTarget as HTMLElement).classList.contains(
           "uowl-sat-button-bar-button-disabled"
         )
       ) {
         deleteLastDrawElement();
         if (!hasElement()) {
-          ev.currentTarget.classList.add("uowl-sat-button-bar-button-disabled");
+          (ev.currentTarget as HTMLElement).classList.add(
+            "uowl-sat-button-bar-button-disabled"
+          );
         }
       }
     };
 
-    const colorPickerOnClick = ev => {
-      const isOpen = ev.currentTarget.dataset.open;
+    const colorPickerOnClick = (ev: MouseEvent | TouchEvent) => {
+      const currentTarget = ev.currentTarget as HTMLElement;
+      closeOpenCommentPopups();
+      const isOpen = currentTarget.dataset.open;
       if (isOpen === "false") {
-        ev.currentTarget.setAttribute("data-open", "true");
+        currentTarget.setAttribute("data-open", "true");
       } else {
-        ev.currentTarget.setAttribute("data-open", "false");
+        currentTarget.setAttribute("data-open", "false");
       }
     };
 
@@ -1028,6 +1234,10 @@ ${evt.data.cssVariables}
     maskButton.appendChild(createMaskIcon());
     maskButton.addEventListener("click", buttonBarButtonOnClick);
 
+    const commentButton = createSATButtonBarButton("comment");
+    commentButton.appendChild(createCommentIcon());
+    commentButton.addEventListener("click", buttonBarButtonOnClick);
+
     const undoButton = createSATButtonBarButton("undo");
     undoButton.appendChild(createUndoIcon());
     undoButton.classList.add("uowl-sat-button-bar-button-disabled");
@@ -1043,6 +1253,7 @@ ${evt.data.cssVariables}
     satBB.appendChild(highlightButton);
     satBB.appendChild(penButton);
     satBB.appendChild(maskButton);
+    satBB.appendChild(commentButton);
     satBB.appendChild(colorPicker);
     satBB.appendChild(undoButton);
     satBB.appendChild(createSATNextButton());
@@ -1054,10 +1265,11 @@ ${evt.data.cssVariables}
 
   const satCloseFN = () => {
     unlockDocumentBody();
+    closeOpenCommentPopups();
     document
       .querySelectorAll(".uowl-screen-annotate-tool")
       .forEach(el => el.remove());
-    draww.clear();
+    clearDrawing();
     showWidgetButton();
     feedbackFormDiv.setAttribute("data-is-open", "true");
     // draww.clear();
@@ -1071,7 +1283,7 @@ ${evt.data.cssVariables}
     );
   };
 
-  const satEscapeHandler = e => {
+  const satEscapeHandler = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       // escape key maps to keycode `27`
       satCloseFN();
@@ -1160,13 +1372,14 @@ ${evt.data.cssVariables}
   };
 
   const takeScreenshot = () => {
-    const cloneDoc = document.documentElement.cloneNode(true);
-    draww.clear();
+    // @ts-ignore
+    const cloneDoc: HTMLElement = document.documentElement.cloneNode(true);
+    clearDrawing();
     document
       .querySelectorAll(".uowl-screen-annotate-tool")
       .forEach(el => el.remove());
 
-    Array.from(cloneDoc.querySelectorAll("script", "noscript")).forEach(el =>
+    Array.from(cloneDoc.querySelectorAll("script, noscript")).forEach(el =>
       el.remove()
     );
 
@@ -1174,8 +1387,24 @@ ${evt.data.cssVariables}
       ".uowl-screen-annotate-tool"
     );
 
+    let commentMap: { number: number; value: string }[];
+
     if (screenAnnotateTool) {
-      screenAnnotateTool.style = "visibility: visible";
+      screenAnnotateTool.setAttribute("style", "visibility: visible");
+      commentMap = Array.from(
+        screenAnnotateTool.querySelectorAll(".uowl-sat-comment-group")
+      )
+        .map(el => el as HTMLElement)
+        .map(commentGroupEl => {
+          const number = +commentGroupEl.dataset.number;
+          const value = (commentGroupEl.querySelector(
+            ".uowl-sat-comment-textarea"
+          ) as HTMLTextAreaElement).value;
+          return {
+            number,
+            value
+          };
+        });
     }
 
     cloneDoc
@@ -1184,10 +1413,17 @@ ${evt.data.cssVariables}
       )
       .forEach(el => el.remove());
 
+    // cloneDoc
+    // .querySelectorAll(
+    //   ".uowl-sat-comment-group"
+    // ).map((el) => {
+    //   const number = el.g
+    // })
+
     const styleText = Array.from(cloneDoc.querySelectorAll("style"))
       .filter(styleElement => styleElement.innerText === "")
       .map(styleElement => {
-        const rules = [];
+        const rules: string[] = [];
 
         [...styleElement.sheet.cssRules].forEach(cssRule => {
           rules.push(cssRule.cssText);
@@ -1252,6 +1488,7 @@ ${evt.data.cssVariables}
         x: window.innerWidth,
         y: window.innerHeight
       },
+      commentMap: commentMap,
       devicePixelRatio: window.devicePixelRatio,
       deviceType: "desktop"
     };

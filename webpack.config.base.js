@@ -9,9 +9,14 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /(\.js|\.ts)$/,
         loader: "babel-loader",
-        exclude: /node_modules/
+        exclude: [
+          {
+            and: [path.resolve(__dirname, "node_modules")],
+            not: [path.resolve(__dirname, "node_modules/@userowl/svg.draw.js")]
+          }
+        ]
       },
       {
         test: /\.css$/,
@@ -21,6 +26,7 @@ module.exports = {
     ]
   },
   resolve: {
+    extensions: [".ts", ".js", ".json"],
     alias: {
       "@svgdotjs/svg.js": path.resolve("./node_modules/@svgdotjs/svg.js")
     }
