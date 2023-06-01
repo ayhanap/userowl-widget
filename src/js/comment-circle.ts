@@ -306,14 +306,33 @@ extend(Container, {
     const textArea = commentDiv.node.querySelector(
       ".uowl-sat-comment-textarea"
     ) as HTMLElement;
-    new Promise<void>(async (resolve) => {
-      const p1 = new Promise((res) => setTimeout(() => res("p1"), 100));
-      await p1;
-      textArea.style.display = "block";
-      resolve();
-    }).then(() => {
+
+    // new Promise<void>(async (resolve) => {
+    //   const p1 = new Promise((res) => setTimeout(() => res("p1"), 100));
+    //   await p1;
+    //   textArea.style.display = "block";
+    //   resolve();
+    // }).then(() => {
+    //   textArea.focus();
+    // });
+
+    var __tempEl__ = document.createElement("input");
+    __tempEl__.style.position = "absolute";
+    __tempEl__.style.top = textArea.offsetTop + 7 + "px";
+    __tempEl__.style.left = textArea.offsetLeft + "px";
+    __tempEl__.style.height = "0";
+    __tempEl__.style.opacity = "0";
+    // Put this temp element as a child of the page <body> and focus on it
+    document.body.appendChild(__tempEl__);
+    __tempEl__.focus();
+
+    // The keyboard is open. Now do a delayed focus on the target element
+    setTimeout(function() {
       textArea.focus();
-    });
+      textArea.click();
+      // Remove the temp element
+      document.body.removeChild(__tempEl__);
+    }, 100);
 
     group.setInitialized(true);
 
