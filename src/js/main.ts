@@ -215,6 +215,7 @@ draww.on("touchstart", (event: TouchEvent) => {
     //the event is multi-touch
     //you can then prevent the behavior
     event.preventDefault();
+    return;
   }
   event.preventDefault();
   if (closeOpenCommentPopups()) {
