@@ -664,6 +664,9 @@ ${evt.data.cssVariables}
     }
 
     .uowl-sat-comment-textarea {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
       display: block; 
       padding-top: 0.375em;
       padding-bottom: 0.375em; 
@@ -678,7 +681,7 @@ ${evt.data.cssVariables}
       border-width: 0; 
       border-color: #D1D5DB; 
       resize: none; 
-      box-shadow: inset 0 0 0 1px #D1D5DB, 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
+      box-shadow: inset 0 0 0 1px #D1D5DB, 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
 
     .uowl-sat-comment-done {
