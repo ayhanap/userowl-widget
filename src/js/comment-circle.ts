@@ -144,7 +144,12 @@ const repositionPopupWithEvent: EventListener = (e: CustomEvent) => {
 
 const addDragEvents = (svg: Svg, commentCircle: CommentCircle) => {
   commentCircle.on("beforedrag", (e: CustomEvent) => {
-    if (commentCircle.hasClass("uowl-sat-comment-group-open")) {
+    const mouseEvent: MouseEvent | TouchEvent = e.detail.event;
+
+    if (
+      mouseEvent instanceof TouchEvent &&
+      commentCircle.hasClass("uowl-sat-comment-group-open")
+    ) {
       e.preventDefault();
     }
     if (
@@ -156,9 +161,8 @@ const addDragEvents = (svg: Svg, commentCircle: CommentCircle) => {
       e.preventDefault();
       return;
     }
-    const mouseEvent = e.detail.event;
     var x, y;
-    if (mouseEvent.changedTouches && mouseEvent.changedTouches.length) {
+    if (mouseEvent instanceof TouchEvent) {
       x = mouseEvent.changedTouches[0].clientX;
       y = mouseEvent.changedTouches[0].clientY;
     } else {
