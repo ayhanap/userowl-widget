@@ -303,10 +303,12 @@ extend(Container, {
 
     this.put(group);
 
+    const textArea = commentDiv.node.querySelector(
+      ".uowl-sat-comment-textarea"
+    ) as HTMLElement;
+    textArea.style.display = "none";
+
     setTimeout(() => {
-      const textArea = commentDiv.node.querySelector(
-        ".uowl-sat-comment-textarea"
-      ) as HTMLElement;
       new Promise<void>((resolve) => {
         textArea.style.display = "block";
         resolve();
