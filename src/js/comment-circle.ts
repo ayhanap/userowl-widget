@@ -73,10 +73,6 @@ export const closeOpenCommentPopups = () => {
   if (openCommentCircles.length > 0) {
     openCommentCircles.forEach((el) => {
       el.classList.remove("uowl-sat-comment-group-open");
-      const textArea = el.querySelector(
-        ".uowl-sat-comment-textarea"
-      ) as HTMLElement;
-      textArea.style.display = "none";
     });
     return true;
   }
@@ -189,6 +185,26 @@ const addDragEvents = (svg: Svg, commentCircle: CommentCircle) => {
   commentCircle.on("dragmove", repositionPopupWithEvent);
 };
 
+const focusOnElement = (element: HTMLElement) => {
+  var __tempEl__ = document.createElement("input");
+  __tempEl__.style.position = "absolute";
+  __tempEl__.style.top = element.offsetTop + 7 + "px";
+  __tempEl__.style.left = element.offsetLeft + "px";
+  __tempEl__.style.height = "0";
+  __tempEl__.style.opacity = "0";
+  // Put this temp element as a child of the page <body> and focus on it
+  document.body.appendChild(__tempEl__);
+  __tempEl__.focus();
+
+  // The keyboard is open. Now do a delayed focus on the target element
+  setTimeout(function() {
+    element.focus();
+    element.click();
+    // Remove the temp element
+    document.body.removeChild(__tempEl__);
+  }, 100);
+};
+
 extend(Container, {
   commentCircle: function(circleOptions: object, number: number) {
     const thiz = this as ExtendedSvg;
@@ -277,17 +293,10 @@ extend(Container, {
         ) as HTMLElement;
         if (group.hasClass("uowl-sat-comment-group-open")) {
           group.removeClass("uowl-sat-comment-group-open");
-          commentTextArea.style.display = "none";
         } else {
           closeOpenCommentPopups();
           group.addClass("uowl-sat-comment-group-open");
-
-          new Promise<void>((resolve) => {
-            commentTextArea.style.display = "block";
-            resolve();
-          }).then(() => {
-            commentTextArea.focus();
-          });
+          focusOnElement(commentTextArea);
         }
       }
     };
@@ -315,24 +324,7 @@ extend(Container, {
     // }).then(() => {
     //   textArea.focus();
     // });
-
-    var __tempEl__ = document.createElement("input");
-    __tempEl__.style.position = "absolute";
-    __tempEl__.style.top = textArea.offsetTop + 7 + "px";
-    __tempEl__.style.left = textArea.offsetLeft + "px";
-    __tempEl__.style.height = "0";
-    __tempEl__.style.opacity = "0";
-    // Put this temp element as a child of the page <body> and focus on it
-    document.body.appendChild(__tempEl__);
-    __tempEl__.focus();
-
-    // The keyboard is open. Now do a delayed focus on the target element
-    setTimeout(function() {
-      textArea.focus();
-      textArea.click();
-      // Remove the temp element
-      document.body.removeChild(__tempEl__);
-    }, 100);
+    focusOnElement(textArea);
 
     group.setInitialized(true);
 
