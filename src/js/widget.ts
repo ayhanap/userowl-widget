@@ -620,6 +620,7 @@ ${evt.data.cssVariables}
       height: 225px;
       visibility: hidden;
       cursor: auto;
+      overflow: visible;
     }
 
     .uowl-sat-comment-group {
@@ -633,8 +634,8 @@ ${evt.data.cssVariables}
 
     .uowl-sat-comment-popup > div {
       padding: 1.25em; 
-      width: 100%; 
-      height: 100%; 
+      width: 400px; 
+      height: 225px; 
       cursor: auto; 
     }
 
@@ -911,6 +912,11 @@ ${evt.data.cssVariables}
         left: -16px;
         transform: none;
       }
+
+
+    .uowl-sat-comment-popup > div {
+      width: 100%; 
+    }
     
     }
     `;

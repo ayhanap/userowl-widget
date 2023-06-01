@@ -117,11 +117,13 @@ const repositionPopupWithEvent: EventListener = (e: CustomEvent) => {
   const popup = currentTarget.querySelector(
     ".uowl-sat-comment-popup"
   ) as HTMLElement;
-
+  popup.setAttribute("width", "100%");
+  const popupRootDiv = popup.children[0] as HTMLElement;
+  const popupRootDivStyle = getComputedStyle(popupRootDiv);
   const options = {
     placement: "bottom" as Placement,
   };
-  computePosition(button, popup, {
+  computePosition(button, popupRootDiv, {
     ...options,
     middleware: [offset(-5), shift(), flip()],
   }).then(({ x, y }) => {
@@ -134,6 +136,8 @@ const repositionPopupWithEvent: EventListener = (e: CustomEvent) => {
       "y",
       (y - (buttonRect.y + buttonRect.height / 2)).toString()
     );
+    popup.setAttribute("width", popupRootDivStyle.width);
+    popup.setAttribute("height", popupRootDivStyle.height);
   });
   // events are still bound e.g. dragend will fire anyway
 };
@@ -236,8 +240,9 @@ extend(Container, {
     //   .active();
 
     const text = new Text();
+    text.plain(number.toString());
+
     group.setTextElement(text);
-    text.text(number.toString());
     text.css("userSelect", "none");
     text.attr({
       "text-anchor": "middle",
