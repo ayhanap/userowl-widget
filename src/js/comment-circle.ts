@@ -71,9 +71,13 @@ export const closeOpenCommentPopups = () => {
     ".uowl-sat-comment-group.uowl-sat-comment-group-open"
   );
   if (openCommentCircles.length > 0) {
-    openCommentCircles.forEach((el) =>
-      el.classList.remove("uowl-sat-comment-group-open")
-    );
+    openCommentCircles.forEach((el) => {
+      el.classList.remove("uowl-sat-comment-group-open");
+      const textArea = el.querySelector(
+        ".uowl-sat-comment-textarea"
+      ) as HTMLElement;
+      textArea.style.display = "none";
+    });
     return true;
   }
   return false;
@@ -144,6 +148,9 @@ const repositionPopupWithEvent: EventListener = (e: CustomEvent) => {
 
 const addDragEvents = (svg: Svg, commentCircle: CommentCircle) => {
   commentCircle.on("beforedrag", (e: CustomEvent) => {
+    if (commentCircle.hasClass("uowl-sat-comment-group-open")) {
+      e.preventDefault();
+    }
     if (
       e.detail.event.currentTarget
         .querySelector(".uowl-sat-comment-popup")
@@ -300,9 +307,14 @@ extend(Container, {
       const textArea = commentDiv.node.querySelector(
         ".uowl-sat-comment-textarea"
       ) as HTMLElement;
-      textArea.focus();
+      new Promise<void>((resolve) => {
+        textArea.style.display = "block";
+        resolve();
+      }).then(() => {
+        textArea.focus();
+      });
+      group.setInitialized(true);
     }, 100);
-    group.setInitialized(true);
 
     return group;
   },
