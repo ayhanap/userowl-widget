@@ -265,14 +265,15 @@ extend(Container, {
     const onClickFN = (e: MouseEvent) => {
       group.front();
       if (!group.isMoved()) {
+        const commentTextArea = commentDiv.node.querySelector(
+          ".uowl-sat-comment-textarea"
+        ) as HTMLElement;
         if (group.hasClass("uowl-sat-comment-group-open")) {
           group.removeClass("uowl-sat-comment-group-open");
+          commentTextArea.style.display = "none";
         } else {
           closeOpenCommentPopups();
           group.addClass("uowl-sat-comment-group-open");
-          const commentTextArea = commentDiv.node.querySelector(
-            ".uowl-sat-comment-textarea"
-          ) as HTMLElement;
 
           new Promise<void>((resolve) => {
             commentTextArea.style.display = "block";
