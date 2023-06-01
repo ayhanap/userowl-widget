@@ -66,7 +66,7 @@ const getDrawObject = () => {
     "fill-opacity": 0,
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
-    opacity: 0.6
+    opacity: 0.6,
   };
 
   const maskOption = {
@@ -75,7 +75,7 @@ const getDrawObject = () => {
     "stroke-width": 6,
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
-    opacity: 0.6
+    opacity: 0.6,
   };
 
   const optionHighlighter = {
@@ -84,14 +84,14 @@ const getDrawObject = () => {
     "fill-opacity": 0,
     // "stroke-linecap": "round",
     // "stroke-linejoin": "round",
-    opacity: 0.5
+    opacity: 0.5,
   };
 
   const optionComment = {
-    fill: color
+    fill: color,
   };
   const markerOption = {
-    fill: color
+    fill: color,
   };
 
   var drawObject: Element;
@@ -122,18 +122,18 @@ const getDrawObject = () => {
       drawObject = draww.commentCircle(optionComment, commentIndex);
       drawObject.node
         .querySelector(".uowl-sat-comment-delete")
-        .addEventListener("click", e => {
+        .addEventListener("click", (e) => {
           const itemIndex = shapes.indexOf(drawObject);
           shapes.splice(itemIndex, 1);
           shapes
-            .filter(el => el instanceof CommentCircle)
-            .map(el => el as CommentCircle)
+            .filter((el) => el instanceof CommentCircle)
+            .map((el) => el as CommentCircle)
             .filter(
-              commentCircle =>
+              (commentCircle) =>
                 commentCircle.getValue() >
                 (drawObject as CommentCircle).getValue()
             )
-            .forEach(commentCircle =>
+            .forEach((commentCircle) =>
               commentCircle.setValue(commentCircle.getValue() - 1)
             );
           drawObject.remove();
@@ -148,16 +148,16 @@ const getDrawObject = () => {
   }
   drawObject.draggable();
   if (!(drawObject instanceof CommentCircle)) {
-    drawObject.on("beforedrag", e => {
+    drawObject.on("beforedrag", (e) => {
       closeOpenCommentPopups();
       draww.fire("beforedrag", e);
     });
-    drawObject.on("dragend", e => {
+    drawObject.on("dragend", (e) => {
       draww.fire("dragend", e);
     });
   }
 
-  drawObject.on("drawdone.apaydin", e => {
+  drawObject.on("drawdone.apaydin", (e) => {
     const target = e.target as LinkedHTMLElement;
     if (shape !== "highlight") {
       target.instance.attr({ opacity: 1 });
@@ -165,7 +165,7 @@ const getDrawObject = () => {
     target.instance.off("drawdone.apaydin");
     // eslint-disable-next-line no-unused-vars
     if (shape !== "comment") {
-      drawObject.on("mouseover.apaydin", e => {
+      drawObject.on("mouseover.apaydin", (e) => {
         drawObject.filterWith(shadowFilter);
       });
     }
@@ -175,11 +175,11 @@ const getDrawObject = () => {
   });
 
   // eslint-disable-next-line no-unused-vars
-  drawObject.on("mouseup.apaydin", e => {
+  drawObject.on("mouseup.apaydin", (e) => {
     // console.log(e);
   });
   // eslint-disable-next-line no-unused-vars
-  drawObject.on("mouseout.apaydin", e => {
+  drawObject.on("mouseout.apaydin", (e) => {
     drawObject.unfilter();
   });
   return drawObject;
@@ -187,7 +187,7 @@ const getDrawObject = () => {
 
 let drawing;
 
-draww.on("mousedown", event => {
+draww.on("mousedown", (event) => {
   const target = event.target as LinkedHTMLElement;
   if (
     !(target.parentNode as HTMLElement).classList.contains("uowl-sat-canvas")
@@ -203,12 +203,18 @@ draww.on("mousedown", event => {
   drawing = true;
 });
 
-draww.on("touchstart", event => {
+draww.on("touchstart", (event: TouchEvent) => {
   const target = event.target as LinkedHTMLElement;
+
   if (
     !(target.parentNode as HTMLElement).classList.contains("uowl-sat-canvas")
   ) {
     return;
+  }
+  if (event.touches.length > 1) {
+    //the event is multi-touch
+    //you can then prevent the behavior
+    event.preventDefault();
   }
   event.preventDefault();
   if (closeOpenCommentPopups()) {
@@ -220,19 +226,19 @@ draww.on("touchstart", event => {
   drawing = true;
 });
 
-draww.on("mousemove", event => {
+draww.on("mousemove", (event) => {
   if ((shape === "pen" || shape === "highlight") && shapes[index]) {
     shapes[index].draw("point", event);
   }
 });
 
-draww.on("touchmove", event => {
+draww.on("touchmove", (event) => {
   if ((shape === "pen" || shape === "highlight") && shapes[index]) {
     shapes[index].draw("point", event);
   }
 });
 
-draww.on("mouseup", event => {
+draww.on("mouseup", (event) => {
   if (shapes[index]) {
     if (shape === "pen" || shape === "highlight" || shape === "comment") {
       // shapes[index].draw("stop", event);
@@ -244,7 +250,7 @@ draww.on("mouseup", event => {
   }
 });
 
-draww.on("touchend", event => {
+draww.on("touchend", (event) => {
   if (shapes[index]) {
     if (shape === "pen" || shape === "highlight") {
       // shapes[index].draw("stop", event);
@@ -354,7 +360,7 @@ registerPlugin("line polyline polygon", {
     var p = this.startPoint,
       arr = [
         [p.x, p.y],
-        [p.x, p.y]
+        [p.x, p.y],
       ];
 
     this.el.plot(arr);
@@ -420,5 +426,5 @@ registerPlugin("line polyline polygon", {
     this.set.clear();
 
     delete this.set;
-  }
+  },
 });
