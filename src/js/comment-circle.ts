@@ -224,12 +224,12 @@ extend(Container, {
 
     const group = new CommentCircle(number);
     // group.translate(x, y);
-    const circle = new Circle({ r: 15 });
+    const circle = new Circle({ r: 20 });
     circle.attr(circleOptions);
     circle.addClass("uowl-sat-comment-button");
     circle.filterWith(shadowFilter);
     const radiusAnimation = SVG(
-      '<animate attributeName="r" from="14" to="25" dur="1.5s" begin="0s" repeatCount="indefinite"></animate>'
+      '<animate attributeName="r" from="19" to="30" dur="1.5s" begin="0s" repeatCount="indefinite"></animate>'
     );
 
     const opacityAnimation = SVG(
@@ -251,7 +251,7 @@ extend(Container, {
             </div>
         </foreignObject>`
     );
-    const animatedCircle = new Circle({ r: 15 });
+    const animatedCircle = new Circle({ r: 20 });
     animatedCircle.attr(circleOptions);
     animatedCircle.put(radiusAnimation);
     animatedCircle.put(opacityAnimation);
