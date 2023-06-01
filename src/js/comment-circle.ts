@@ -286,6 +286,7 @@ extend(Container, {
     group.on("drawstart.self", repositionPopupWithEvent);
 
     const onClickFN = (e: MouseEvent) => {
+      e.preventDefault();
       group.front();
       if (!group.isMoved()) {
         const commentTextArea = commentDiv.node.querySelector(
