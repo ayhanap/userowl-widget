@@ -185,7 +185,8 @@ const addDragEvents = (svg: Svg, commentCircle: CommentCircle) => {
 extend(Container, {
   commentCircle: function(circleOptions: object, number: number) {
     const thiz = this as ExtendedSvg;
-    if (!shadowFilter)
+
+    if (!(shadowFilter && thiz.defs().has(shadowFilter)))
       shadowFilter = thiz.filter(function(add) {
         add.dropShadow(add.$source, 0, 0, 3);
         // this.size("2500%", "2000%").move("-1250%", "-1250%");
@@ -274,7 +275,8 @@ extend(Container, {
               ".uowl-sat-comment-textarea"
             ) as HTMLElement;
             commentTextArea.focus();
-          }, 100);
+            commentTextArea.click();
+          }, 200);
         }
       }
     };

@@ -48,6 +48,6 @@
     "@svgdotjs/svg.draggable.js": "^3.0.2",
     "@svgdotjs/svg.filter.js": "^3.0.8",
     "@svgdotjs/svg.js": "^3.1.2",
-    "@userowl/svg.draw.js": "^0.1.1-dev.17"
+    "@userowl/svg.draw.js": "^0.1.1-dev.18"
   }
 }
