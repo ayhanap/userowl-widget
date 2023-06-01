@@ -303,17 +303,17 @@ extend(Container, {
 
     this.put(group);
 
-    setTimeout(() => {
-      const textArea = commentDiv.node.querySelector(
-        ".uowl-sat-comment-textarea"
-      ) as HTMLElement;
-      new Promise<void>((resolve) => {
-        textArea.style.display = "block";
-        resolve();
-      }).then(() => {
-        textArea.focus();
-      });
-    }, 300);
+    const textArea = commentDiv.node.querySelector(
+      ".uowl-sat-comment-textarea"
+    ) as HTMLElement;
+    new Promise<void>(async (resolve) => {
+      const p1 = new Promise((res) => setTimeout(() => res("p1"), 100));
+      await p1;
+      textArea.style.display = "block";
+      resolve();
+    }).then(() => {
+      textArea.focus();
+    });
 
     group.setInitialized(true);
 
