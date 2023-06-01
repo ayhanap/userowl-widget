@@ -200,6 +200,7 @@ const focusOnElement = (element: HTMLElement) => {
   setTimeout(function() {
     element.focus();
     element.click();
+    element.scrollIntoView();
     // Remove the temp element
     document.body.removeChild(__tempEl__);
   }, 100);
