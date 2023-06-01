@@ -916,6 +916,10 @@ ${evt.data.cssVariables}
         transform: none;
       }
 
+      .uowl-sat-comment-textarea{
+        font-size: 1em;
+        line-height: 1.5em; 
+      }
 
     .uowl-sat-comment-popup > div {
       width: 100%; 
