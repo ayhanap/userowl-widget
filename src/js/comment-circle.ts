@@ -270,13 +270,16 @@ extend(Container, {
         } else {
           closeOpenCommentPopups();
           group.addClass("uowl-sat-comment-group-open");
-          setTimeout(() => {
-            const commentTextArea = commentDiv.node.querySelector(
-              ".uowl-sat-comment-textarea"
-            ) as HTMLElement;
+          const commentTextArea = commentDiv.node.querySelector(
+            ".uowl-sat-comment-textarea"
+          ) as HTMLElement;
+
+          new Promise<void>((resolve) => {
+            commentTextArea.style.display = "block";
+            resolve();
+          }).then(() => {
             commentTextArea.focus();
-            commentTextArea.click();
-          }, 200);
+          });
         }
       }
     };
