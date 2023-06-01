@@ -256,6 +256,7 @@ ${evt.data.cssVariables}
       { aud: "widget", type: "widget-visibility", isVisible: false },
       "*"
     );
+    feedbackButtonDiv.setAttribute("data-is-hidden", "true");
   };
 
   const showWidgetButton = () => {
@@ -263,6 +264,7 @@ ${evt.data.cssVariables}
       { aud: "widget", type: "widget-visibility", isVisible: true },
       "*"
     );
+    feedbackButtonDiv.setAttribute("data-is-hidden", "false");
   };
 
   const createAppDiv = () => {
@@ -373,6 +375,14 @@ ${evt.data.cssVariables}
       right: var(--uowl-widget-button-right);
       transform: var(--uowl-widget-button-transform);
       user-select: none;
+    }
+
+    .userowl-feedback-button[data-is-hidden="true"] {
+      opacity: 0;
+      transform: scale(0);
+      transition-property: opacity, transform;
+      transition-duration: 0s, 0s;
+      transition-delay: 0.3s, 0.3s;
     }
     .userowl-feedback-form {
       position: fixed;
@@ -1321,6 +1331,14 @@ ${evt.data.cssVariables}
     const screenAnnotateDiv = document.createElement("div");
     screenAnnotateDiv.classList.add("uowl-screen-annotate-tool");
     screenAnnotateDiv.ariaLive = "assertive";
+    screenAnnotateDiv.addEventListener("touchstart", (e: TouchEvent) => {
+      if (e.touches.length > 1) {
+        //the event is multi-touch
+        //you can then prevent the behavior
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
 
     const satFrame = document.createElement("div");
     satFrame.classList.add("uowl-sat-frame");
