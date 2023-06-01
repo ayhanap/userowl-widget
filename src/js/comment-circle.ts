@@ -198,9 +198,9 @@ const focusOnElement = (element: HTMLElement) => {
 
   // The keyboard is open. Now do a delayed focus on the target element
   setTimeout(function() {
+    element.scrollIntoView({ block: "end" });
     element.focus();
     element.click();
-    element.scrollIntoView();
     // Remove the temp element
     document.body.removeChild(__tempEl__);
   }, 100);
