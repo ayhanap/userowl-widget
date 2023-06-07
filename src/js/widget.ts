@@ -1313,6 +1313,9 @@ ${evt.data.cssVariables}
 
   const satEscapeHandler = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
+      if (closeOpenCommentPopups()) {
+        return;
+      }
       // escape key maps to keycode `27`
       satCloseFN();
     }
