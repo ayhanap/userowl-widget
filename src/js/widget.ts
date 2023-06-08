@@ -167,6 +167,8 @@ ${evt.data.cssVariables}
       }
       if (evt.data.type === "widget-id-token") {
         setWidgetIdToken(evt.data.access_token, evt.data.expires_in);
+        evt.data.aud = "form";
+        feedbackFormIframe.contentWindow.postMessage(evt.data, "*");
       }
       if (evt.data.type === "request-screenshot") {
         const screenshotData = takeScreenshot();
