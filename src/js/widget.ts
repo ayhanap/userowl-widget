@@ -1410,9 +1410,63 @@ ${evt.data.cssVariables}
     document.body.appendChild(userowlContainer);
   };
 
+  const imprintScrollPosInner = (cloneDoc: Element, originalDoc: Element) => {
+    Array.from(originalDoc.children).forEach((el, i) => {
+      const cloneEl = cloneDoc.children[i];
+      // @ts-ignore
+      if (el.scrollLeft > 0 || el.scrollTop > 0) {
+        cloneEl.setAttribute("data-uowl-scroll-left", el.scrollLeft.toString());
+        cloneEl.setAttribute("data-uowl-scroll-top", el.scrollTop.toString());
+      }
+      const tagName = el.tagName.toUpperCase();
+      // TODO: userowl-hidden to divs
+      if (
+        tagName === "INPUT" ||
+        tagName === "TEXTAREA" ||
+        tagName === "SELECT"
+      ) {
+        const inputEl = el as HTMLInputElement;
+        const value = inputEl.value;
+        if (inputEl.type === "checkbox" || inputEl.type === "radio") {
+          cloneEl.setAttribute(
+            "data-uowl-checked",
+            inputEl.checked ? "true" : "false"
+          );
+        }
+        if (inputEl.dataset.userowlIgnore !== "true") {
+          cloneEl.setAttribute("data-uowl-value", value);
+        }
+      }
+
+      if (el.children.length > 0) {
+        imprintScrollPosInner(el, cloneDoc.children[i]);
+      }
+    });
+  };
+
+  const imprintScrollPos = (cloneDoc: Element, originalDoc: Element) => {
+    // @ts-ignore
+    if (originalDoc.scrollLeft > 0 || originalDoc.scrollTop > 0) {
+      cloneDoc.setAttribute(
+        "data-uowl-scroll-left",
+        originalDoc.scrollLeft.toString()
+      );
+      cloneDoc.setAttribute(
+        "data-uowl-scroll-top",
+        originalDoc.scrollTop.toString()
+      );
+    }
+    if (originalDoc.children.length > 0) {
+      imprintScrollPosInner(cloneDoc, originalDoc);
+    }
+  };
+
   const takeScreenshot = () => {
     // @ts-ignore
     const cloneDoc: HTMLElement = document.documentElement.cloneNode(true);
+    imprintScrollPos(cloneDoc, document.documentElement);
+    const documentElement = document.documentElement;
+
     clearDrawing();
     document
       .querySelectorAll(".uowl-screen-annotate-tool")
@@ -1459,7 +1513,7 @@ ${evt.data.cssVariables}
     //   const number = el.g
     // })
 
-    const styleText = Array.from(cloneDoc.querySelectorAll("style"))
+    const styleText = Array.from(documentElement.querySelectorAll("style"))
       .filter((styleElement) => styleElement.innerText === "")
       .map((styleElement) => {
         const rules: string[] = [];
@@ -1520,6 +1574,7 @@ ${evt.data.cssVariables}
     // for (var i = 0; i < childNodes.length; i++) {
     //   htmlString += childNodes[i].outerHTML;
     // }
+
     htmlString += cloneDoc.outerHTML;
     return {
       html: htmlString,
