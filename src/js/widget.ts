@@ -309,6 +309,10 @@ ${evt.data.cssVariables}
 
     feedbackFormIframe.addEventListener("load", () => {
       const fun = () => {
+        if (!isWidgetReady) {
+          window.setTimeout(fun, 500);
+          return;
+        }
         if (!isFormReady) {
           feedbackFormIframe.contentWindow.postMessage(
             {
