@@ -1,4 +1,4 @@
-import { ExtendedSvg } from "@/src/js/ExtendedSvg";
+import { ExtendedSvg } from "@/js/ExtendedSvg";
 import {
   Placement,
   computePosition,

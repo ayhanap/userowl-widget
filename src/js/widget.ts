@@ -1,12 +1,26 @@
 /* eslint-disable no-unused-vars */
-import { closeOpenCommentPopups } from "./comment-circle";
-import { clearDrawing, deleteLastDrawElement, draww, hasElement } from "./main";
+
+import { closeOpenCommentPopups } from "@/js/comment-circle";
+import {
+  UserowlConsole,
+  bindConsoleLogProxy,
+  getConsoleLogs,
+} from "@/js/console-proxy/console-proxy";
+import {
+  clearDrawing,
+  deleteLastDrawElement,
+  draww,
+  hasElement,
+} from "@/js/main";
 
 declare global {
   interface Window {
     UserowlSettings: {
       basePath: string;
       appId: string;
+    };
+    Userowl: {
+      console: UserowlConsole;
     };
   }
 }
@@ -135,6 +149,8 @@ declare global {
     feedbackFormInnerDiv: HTMLDivElement,
     feedbackFormIframe: HTMLIFrameElement;
 
+  let cancelHandlers: (() => void)[] = [];
+
   const handleMessage = (evt: MessageEvent) => {
     if ("aud" in evt.data && evt.data.aud === "parent" && "type" in evt.data) {
       if (evt.data.type === "css-variables") {
@@ -151,6 +167,9 @@ ${evt.data.cssVariables}
       }
       if (evt.data.type === "widget-ready") {
         isWidgetReady = true;
+        if (evt.data.consoleLogEnabled) {
+          cancelHandlers.push(...bindConsoleLogProxy());
+        }
         getWidgetToken().then((widgetToken) =>
           feedbackButtonIframe.contentWindow.postMessage(
             { aud: "widget", type: "widget-token", widgetToken: widgetToken },
@@ -169,6 +188,17 @@ ${evt.data.cssVariables}
         setWidgetIdToken(evt.data.access_token, evt.data.expires_in);
         evt.data.aud = "form";
         feedbackFormIframe.contentWindow.postMessage(evt.data, "*");
+      }
+      if (evt.data.type === "request-console-logs") {
+        const consoleLogs = getConsoleLogs();
+        feedbackFormIframe.contentWindow.postMessage(
+          {
+            aud: "form",
+            type: "console-logs-result",
+            logs: consoleLogs,
+          },
+          "*"
+        );
       }
       if (evt.data.type === "request-screenshot") {
         const screenshotData = takeScreenshot();
@@ -330,6 +360,7 @@ ${evt.data.cssVariables}
 
     appDiv.appendChild(feedbackFormDiv);
     appDiv.appendChild(feedbackButtonDiv);
+    bindConsoleLogProxy();
     return appDiv;
   };
 
