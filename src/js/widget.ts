@@ -106,9 +106,15 @@ declare global {
   const createFeedbackButtonDiv = () => {
     const feedbackButton = document.createElement("div");
     feedbackButton.classList.add("userowl-feedback-button");
+    feedbackButton.setAttribute("data-is-hidden", "true");
     return feedbackButton;
   };
 
+  const createFeedbackButtonInnerDiv = () => {
+    const feedbackButtonInner = document.createElement("div");
+    feedbackButtonInner.classList.add("userowl-feedback-button-inner");
+    return feedbackButtonInner;
+  };
   const createFeedbackFormIframe = () => {
     const iframe = document.createElement("iframe");
 
@@ -144,6 +150,7 @@ declare global {
   let isWidgetReady = false;
 
   let feedbackButtonDiv: HTMLDivElement,
+    feedbackButtonInnerDiv: HTMLDivElement,
     feedbackButtonIframe: HTMLIFrameElement,
     feedbackFormDiv: HTMLDivElement,
     feedbackFormInnerDiv: HTMLDivElement,
@@ -152,7 +159,12 @@ declare global {
   let cancelHandlers: (() => void)[] = [];
 
   const handleMessage = (evt: MessageEvent) => {
-    if ("aud" in evt.data && evt.data.aud === "parent" && "type" in evt.data) {
+    if (
+      evt.data &&
+      "aud" in evt.data &&
+      evt.data.aud === "parent" &&
+      "type" in evt.data
+    ) {
       if (evt.data.type === "css-variables") {
         const styleTag = document.getElementById("userowl-app-style-vars");
         var styles = `
@@ -176,6 +188,7 @@ ${evt.data.cssVariables}
             "*"
           )
         );
+        window.setTimeout(() => showWidgetButton(), 100);
       }
       if (evt.data.type === "form-open") {
         if (evt.data.isOpen) {
@@ -306,9 +319,12 @@ ${evt.data.cssVariables}
     appDiv.ariaLive = "polite";
 
     feedbackButtonDiv = createFeedbackButtonDiv();
+    feedbackButtonInnerDiv = createFeedbackButtonInnerDiv();
+    feedbackButtonDiv.appendChild(feedbackButtonInnerDiv);
+
     feedbackButtonIframe = createFeedbackButtonIframe();
 
-    feedbackButtonDiv.appendChild(feedbackButtonIframe);
+    feedbackButtonInnerDiv.appendChild(feedbackButtonIframe);
 
     feedbackFormDiv = createFeedbackFormDiv();
     feedbackFormInnerDiv = createFeedbackFormInnerDiv();
@@ -393,6 +409,9 @@ ${evt.data.cssVariables}
       --uowl-widget-form-width: 1000px;
       --uowl-widget-form-height: 1000px;
       --uowl-widget-form-top-plus-bottom: 0px;
+      --uowl-widget-button-border-radius: 0px;
+      --uowl-widget-button-inner-transform: translate(0px);
+      --uowl-widget-button-inner-hidden-transform: translate(0px);
       font-size: 16px;
     }
     .userowl-app *,:after,:before {
@@ -404,14 +423,34 @@ ${evt.data.cssVariables}
     .userowl-feedback-button {
       position: fixed;
       z-index: 2147483615;
-      width: var(--uowl-widget-button-width);
-      height: var(--uowl-widget-button-height);
       top: var(--uowl-widget-button-top);
       left: var(--uowl-widget-button-left);
       bottom: var(--uowl-widget-button-bottom);
       right: var(--uowl-widget-button-right);
       transform: var(--uowl-widget-button-transform);
       user-select: none;
+    }
+
+    .userowl-feedback-button-inner {
+      width: var(--uowl-widget-button-width);
+      height: var(--uowl-widget-button-height);
+      border-radius: var(--uowl-widget-button-border-radius);
+      transform: var(--uowl-widget-button-inner-transform);
+      overflow: hidden;
+      transition-property: transform, box-shadow, opacity;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 200ms;
+    }
+
+    .userowl-feedback-button-inner:hover {
+      transform: translate(0px);
+      box-shadow:rgba(0, 0, 0, 0.5) 0px 0px 12px 0px;
+    }
+
+    .userowl-feedback-button[data-is-hidden="true"] .userowl-feedback-button-inner{
+      transform: var(--uowl-widget-button-inner-hidden-transform);
+      transition-duration: 100ms;
+      opacity: 0;
     }
 
     .userowl-feedback-button[data-is-hidden="true"] {
