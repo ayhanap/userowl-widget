@@ -100,6 +100,7 @@ declare global {
     const widgetUrl = `${basePath}/projects/${window.UserowlSettings.appId}/widget`;
 
     iframe.src = widgetUrl;
+    iframe.title = "Userowl Widget";
     return iframe;
   };
 
@@ -130,6 +131,7 @@ declare global {
     const formUrl = `${basePath}/projects/${window.UserowlSettings.appId}/widgetForm`;
 
     iframe.src = formUrl;
+    iframe.title = "Userowl Widget Form";
     return iframe;
   };
 
