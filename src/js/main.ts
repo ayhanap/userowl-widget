@@ -203,29 +203,35 @@ draww.on("mousedown", (event) => {
   drawing = true;
 });
 
-draww.on("touchstart", (event: TouchEvent) => {
-  const target = event.target as LinkedHTMLElement;
-
-  if (
-    !(target.parentNode as HTMLElement).classList.contains("uowl-sat-canvas")
-  ) {
-    return;
-  }
-  if (event.touches.length > 1) {
-    //the event is multi-touch
-    //you can then prevent the behavior
+draww.on(
+  "touchstart",
+  (event: TouchEvent) => {
     event.preventDefault();
-    return;
-  }
-  event.preventDefault();
-  if (closeOpenCommentPopups()) {
-    return;
-  }
-  const shape = getDrawObject();
-  shapes[index] = shape;
-  shape.draw(event);
-  drawing = true;
-});
+    const target = event.target as LinkedHTMLElement;
+
+    if (
+      !(target.parentNode as HTMLElement).classList.contains("uowl-sat-canvas")
+    ) {
+      return;
+    }
+    if (event.touches.length > 1) {
+      //the event is multi-touch
+      //you can then prevent the behavior
+      event.preventDefault();
+      return;
+    }
+
+    if (closeOpenCommentPopups()) {
+      return;
+    }
+    const shape = getDrawObject();
+    shapes[index] = shape;
+    shape.draw(event);
+    drawing = true;
+  },
+  undefined,
+  { passive: false }
+);
 
 draww.on("mousemove", (event) => {
   if ((shape === "pen" || shape === "highlight") && shapes[index]) {
@@ -233,11 +239,16 @@ draww.on("mousemove", (event) => {
   }
 });
 
-draww.on("touchmove", (event) => {
-  if ((shape === "pen" || shape === "highlight") && shapes[index]) {
-    shapes[index].draw("point", event);
-  }
-});
+draww.on(
+  "touchmove",
+  (event: TouchEvent) => {
+    if ((shape === "pen" || shape === "highlight") && shapes[index]) {
+      shapes[index].draw("point", event);
+    }
+  },
+  undefined,
+  { passive: true }
+);
 
 draww.on("mouseup", (event) => {
   if (shapes[index]) {
@@ -251,17 +262,22 @@ draww.on("mouseup", (event) => {
   }
 });
 
-draww.on("touchend", (event) => {
-  if (shapes[index]) {
-    if (shape === "pen" || shape === "highlight") {
-      // shapes[index].draw("stop", event);
-      shapes[index].draw("done");
-    } else {
-      shapes[index].draw(event);
+draww.on(
+  "touchend",
+  (event: TouchEvent) => {
+    if (shapes[index]) {
+      if (shape === "pen" || shape === "highlight") {
+        // shapes[index].draw("stop", event);
+        shapes[index].draw("done");
+      } else {
+        shapes[index].draw(event);
+      }
+      index++;
     }
-    index++;
-  }
-});
+  },
+  undefined,
+  { passive: true }
+);
 
 // class IPoint extends Shape {
 //   constructor(node) {
