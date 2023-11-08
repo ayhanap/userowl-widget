@@ -1463,8 +1463,10 @@ ${evt.data.cssVariables}
     return screenAnnotateDiv;
   };
 
-  const loadWidget = () => {
+  const loadWidget = (cleanInstall: boolean) => {
+    if (isWidgetReady && isFormReady) return;
     const userowlContainer = document.createElement("div");
+    userowlContainer.id = "userowl-container";
     userowlContainer.classList.add("userowl-container");
 
     const containerStyle = userowlContainer.style;
@@ -1486,6 +1488,27 @@ ${evt.data.cssVariables}
     // const greeting = script.getAttribute("data-greeting");
 
     document.body.appendChild(userowlContainer);
+    if (cleanInstall) {
+      const callback = (mutationList: MutationRecord[], observer) => {
+        for (const mutation of mutationList) {
+          if (mutation.type === "childList") {
+            const userowlContainerFound = Array.from(
+              mutation.removedNodes.values()
+            ).find((node) => (node as HTMLElement)?.id === "userowl-container");
+            if (userowlContainerFound) {
+              isWidgetReady = false;
+              isFormReady = false;
+              loadWidget(false);
+            }
+          }
+        }
+      };
+      // const targetNode = document.getElementById("userowl-app");
+      const config = { childList: true };
+      const observer = new MutationObserver(callback);
+
+      observer.observe(userowlContainer.parentNode, config);
+    }
   };
 
   const imprintScrollPosInner = (cloneDoc: Element, originalDoc: Element) => {
@@ -1690,11 +1713,11 @@ ${evt.data.cssVariables}
   };
 
   if (document.readyState === "complete") {
-    loadWidget();
+    loadWidget(true);
   } else {
     document.addEventListener("readystatechange", () => {
       if (document.readyState === "complete") {
-        loadWidget();
+        loadWidget(true);
       }
     });
   }
