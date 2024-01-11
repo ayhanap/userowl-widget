@@ -47,8 +47,8 @@ async function getWidgetToken() {
     const widgetToken = JSON.parse(widgetTokenInLocalStorage);
     const exp_date = new Date(widgetToken.exp_date);
     if(exp_date < new Date("2024-01-12T09:00:00.000+03:00")){
-      localStorage.removeItem(widgetTokenInLocalStorage);
-      return  getWidgetToken();
+      localStorage.removeItem(widgetTokenName);
+      return getWidgetToken();
     }
     if (exp_date > new Date()) {
       return widgetToken.access_token;
