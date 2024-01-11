@@ -92,7 +92,8 @@ function getWidgetIdToken(): WidgetIdToken {
 function setWidgetIdToken(access_token: string, expires_in: number) {
   const widgetIdTokenName = `userowlWidgetIdToken-${window.UserowlSettings.appId}`;
   var now = new Date();
-  now.setSeconds(now.getSeconds() + expires_in);
+  // now.setSeconds(now.getSeconds() + expires_in);
+  now.setSeconds(now.getSeconds() + 86400); //TODO: uncomment upper line when correct expires_in value comes from api.
   const widgetIdToken: WidgetIdToken = {
     access_token,
     exp_date: now.getTime(),
