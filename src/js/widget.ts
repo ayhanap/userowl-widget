@@ -74,7 +74,8 @@ function getWidgetIdToken(): WidgetIdToken {
   if (widgetIdTokenInLocalStorage) {
     const widgetIdToken = JSON.parse(widgetIdTokenInLocalStorage);
     const exp_date = new Date(widgetIdToken.exp_date);
-    if(exp_date < new Date("2024-01-12T23:00:00.000+03:00")){
+    if(exp_date < new Date("2024-01-12T09:00:00.000+03:00")){
+      localStorage.removeItem(widgetIdTokenInLocalStorage);
       return undefined;
     }
     if (exp_date > new Date()) {
