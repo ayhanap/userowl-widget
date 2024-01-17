@@ -10,7 +10,7 @@ export const safeFNCall = <Func extends AnyFunction>(
       !getWidgetIframe().contentWindow ||
       !getFeedbackFormIframe().contentWindow
     ) {
-      window.UserowlQueue.push({ c: fn.name, a: args });
+      window.UserowlInternalQueue.push({ c: fn, a: args });
       return;
     }
     return fn(...args);

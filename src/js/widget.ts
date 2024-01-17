@@ -14,7 +14,7 @@ import {
   draww,
   hasElement,
 } from "@/js/main";
-import { type QueueItem, type User, type UserowlSettings } from "userowl";
+import { type InternalQueueItem, type QueueItem, type User, type UserowlSettings } from "userowl";
 
 type UserowlCallableFunctions = {
   identify: (user: User, hash?: string) => void;
@@ -33,6 +33,7 @@ declare global {
     UserowlSettings: UserowlSettings;
     Userowl: Userowl;
     UserowlQueue: QueueItem[];
+    UserowlInternalQueue: InternalQueueItem[];
   }
 }
 
@@ -204,7 +205,13 @@ ${evt.data.cssVariables}
           item.a
         )
       );
-      window.UserowlQueue = [];
+      window.UserowlInternalQueue?.forEach((item) =>
+      item.c.apply(
+        null,
+        item.a
+      )
+    );
+      window.UserowlInternalQueue = [];
     }
     if (evt.data.type === "widget-ready") {
       window.Userowl.isWidgetReady = true;
