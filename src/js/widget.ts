@@ -6,6 +6,7 @@ import {
   bindConsoleLogProxy,
   getConsoleLogs,
 } from "@/js/console-proxy/console-proxy";
+import { safeFNCall } from "@/js/functions/common";
 import { clearUser, identify } from "@/js/functions/identify";
 import {
   clearDrawing,
@@ -22,6 +23,9 @@ type UserowlCallableFunctions = {
 
 type Userowl = UserowlCallableFunctions & {
   console: UserowlConsole;
+  isWidgetReady?: boolean;
+  isFormReady?: boolean;
+  initialize?: 'started' | 'complete';
 };
 
 declare global {
@@ -164,8 +168,6 @@ const createFeedbackFormInnerDiv = () => {
   return feedbackFormInner;
 };
 
-let isFormReady = false;
-let isWidgetReady = false;
 
 let feedbackButtonDiv: HTMLDivElement,
   feedbackButtonInnerDiv: HTMLDivElement,
@@ -193,9 +195,9 @@ ${evt.data.cssVariables}
       styleTag.appendChild(document.createTextNode(styles));
     }
     if (evt.data.type === "form-ready") {
-      isFormReady = true;
-      window.Userowl.identify = identify;
-      window.Userowl.clearUser = clearUser;
+      window.Userowl.isFormReady = true;
+      window.Userowl.identify = safeFNCall(identify);
+      window.Userowl.clearUser = safeFNCall(clearUser);
       window.UserowlQueue.forEach((item) =>
         window.Userowl[item.c as keyof UserowlCallableFunctions].apply(
           null,
@@ -205,7 +207,7 @@ ${evt.data.cssVariables}
       window.UserowlQueue = [];
     }
     if (evt.data.type === "widget-ready") {
-      isWidgetReady = true;
+      window.Userowl.isWidgetReady = true;
       if (evt.data.consoleLogEnabled) {
         cancelHandlers.push(...bindConsoleLogProxy());
       }
@@ -313,7 +315,7 @@ ${evt.data.cssVariables}
   }
   if ("aud" in evt.data && evt.data.aud === "widget" && "type" in evt.data) {
     if (evt.data.type === "form-variables") {
-      isFormReady = true;
+      window.Userowl.isFormReady = true;
       evt.data.aud = "widget";
       feedbackButtonIframe.contentWindow.postMessage(evt.data, "*");
     } else {
@@ -359,13 +361,9 @@ const createAppDiv = () => {
   feedbackFormInnerDiv.appendChild(feedbackFormIframe);
   feedbackFormDiv.appendChild(feedbackFormInnerDiv);
 
-  //feedbackButtonIframe.addEventListener('load', () => {
-  window.addEventListener("message", (evt) => handleMessage(evt));
-  // });
-
   feedbackButtonIframe.addEventListener("load", () => {
     const fun = () => {
-      if (!isWidgetReady) {
+      if (!window.Userowl?.isWidgetReady) {
         feedbackButtonIframe.contentWindow.postMessage(
           {
             aud: "widget",
@@ -382,11 +380,11 @@ const createAppDiv = () => {
 
   feedbackFormIframe.addEventListener("load", () => {
     const fun = () => {
-      if (!isWidgetReady) {
+      if (!window.Userowl?.isWidgetReady) {
         window.setTimeout(fun, 500);
         return;
       }
-      if (!isFormReady) {
+      if (!window.Userowl?.isFormReady) {
         feedbackFormIframe.contentWindow.postMessage(
           {
             aud: "form",
@@ -1489,7 +1487,9 @@ const createScreenAnnotateToolDiv = () => {
 };
 
 const loadWidget = (cleanInstall: boolean) => {
-  if (isWidgetReady && isFormReady) return;
+  if(window.Userowl.initialize === 'started' || window.Userowl.initialize === 'complete') return;
+  if (window.Userowl?.isWidgetReady && window.Userowl?.isFormReady) return;
+  window.Userowl.initialize = 'started';
   const userowlContainer = document.createElement("div");
   userowlContainer.id = "userowl-container";
   userowlContainer.classList.add("userowl-container");
@@ -1512,6 +1512,7 @@ const loadWidget = (cleanInstall: boolean) => {
   userowlContainer.appendChild(createAppDiv());
   // const greeting = script.getAttribute("data-greeting");
 
+  window.addEventListener("message", handleMessage);
   document.body.appendChild(userowlContainer);
   if (cleanInstall) {
     const callback = (mutationList: MutationRecord[], observer) => {
@@ -1521,8 +1522,13 @@ const loadWidget = (cleanInstall: boolean) => {
             mutation.removedNodes.values()
           ).find((node) => (node as HTMLElement)?.id === "userowl-container");
           if (userowlContainerFound) {
-            isWidgetReady = false;
-            isFormReady = false;
+            const tempConsole = window.Userowl.console;
+            window.Userowl = {} as Userowl;
+            window.Userowl.console = tempConsole;
+            window.Userowl.isWidgetReady = false;
+            window.Userowl.isFormReady = false;
+            window.Userowl.initialize = undefined;
+            window.removeEventListener("message", handleMessage);
             loadWidget(false);
           }
         }
@@ -1533,6 +1539,7 @@ const loadWidget = (cleanInstall: boolean) => {
     const observer = new MutationObserver(callback);
 
     observer.observe(userowlContainer.parentNode, config);
+    window.Userowl.initialize = 'complete';
   }
 };
 
